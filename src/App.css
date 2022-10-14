@@ -1,0 +1,39 @@
+*{
+    /* color: azure; */
+    /* background: rgba(0, 0, 0, 0.295); */
+    scroll-behavior: smooth;
+}
+.blackText{
+    color: black !important;
+}
+
+.guardian{
+    font-family: guardianCity;
+    font-style: inherit;
+    font-weight: lighter;
+}
+.misty{
+    font-family: misty;
+    font-style: inherit;
+    font-weight: lighter;
+}
+.lemosty{
+    font-family: lemosty;
+    font-style: inherit;
+    font-weight: lighter;
+}
+
+@font-face {
+    font-family: guardianCity;
+    src: url('/public/fonts/GuardianCity.otf');
+}
+
+@font-face {
+    font-family: misty;
+    src: url('/public/fonts/MistyMedow.otf');
+}
+
+@font-face {
+    font-family: lemosty;
+    src: url('/public/fonts/lemosty.otf');
+}
