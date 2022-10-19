@@ -62,7 +62,7 @@ export default function Home() {
 
     return (
         <div className='App'>
-            <HomePage list={movies ? movies : []} />
+            <HomePage list={movies ? movies : []} search={true} />
             <HomePage list={movies2 ? movies2 : []} />
         </div>
     )
