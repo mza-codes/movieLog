@@ -10,6 +10,7 @@ import "/node_modules/flag-icons/css/flag-icons.min.css";
 import './search.scss'
 import styled from '@emotion/styled'
 import flags from './flags'
+import Header from '../Header/Header'
 
 const StyledRating = styled(Rating)({
     '& .MuiRating-iconFilled': {
@@ -36,6 +37,7 @@ function SearchResult() {
 
     return (
         <>
+        <Header />
             <div className="container-fluid">
                 <div className='result'>
                     <div className="row">

@@ -10,20 +10,21 @@
 .search {
     // background: inherit;
     display: flex;
-    align-items: center;
+    // align-items: center;
     gap: 10px;
-    flex-direction: row;
+    flex-direction: column;
     position: sticky;
 
     input[type=text] {
         padding: 5px;
         margin: 5px;
-        border-radius: 10px;
-        border: 2px solid rgb(90, 90, 90);
+        border-radius: 3px;
+        // border: 2px solid rgb(0, 0, 0);
+        border: 1px solid black;
         max-width: 280px;
-        width: 280px;
-        background: transparent;
-        color: white;
+        width: 250px;
+        // background: transparent;
+        // color: rgb(0, 0, 0);
         // flex-grow:2;
     }
 
@@ -32,18 +33,40 @@
     }
 
     label {
+        // color: white;
         font-size: x-small;
+        font-weight: 800;
         padding-bottom: 3px;
+        
+    }
+
+    .searchBottom{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin: 0px 15px;
+        button{
+            width: 70%;
+            border: none;
+            background: transparent;
+            color: rgb(0, 0, 0);
+            padding: 10px 0px;
+        }
+        button:hover{
+            background: rgb(0, 0, 0);
+            color: white;
+        }
     }
 
     .selector {
         display: flex;
         flex-direction: column;
+        margin-top: -5px;
     }
-    input:focus{
-        border: 2px solid rgb(255, 255, 255);
-        outline: none;
-    }
+    // input:focus{
+    //     border: 2px solid rgb(0, 0, 0);
+    //     outline: none;
+    // }
     .select {
         // float: right;
         margin-left: auto;
@@ -51,7 +74,13 @@
 
     button {
         border-radius: 20px;
-        max-height: 40px;
+        // max-height: 40px;
+        // padding: 5px 15px;
+        background: transparent;
+    }
+    button:hover{
+        // background: #000;
+        color: black;
     }
 }
 
@@ -152,4 +181,16 @@
     width: 300px;
     max-width: 300px;
 
+}
+
+.infoContainer{
+    display: flex;
+    flex-direction: column;
+    // line-height: 5px;
+    gap: 2px;
+    margin-left: 5px;
+    a{
+        text-decoration: none;
+        cursor: pointer;
+    }
 }

@@ -1,10 +1,9 @@
 import { useRoutes } from "react-router-dom";
-
-import React from 'react'
 import Home from "./Components/Home/Home";
 import SearchResult from "./Components/Search/SearchResult";
 import SearchResultIMDB from "./Components/Search/SearchResultIMDB";
-
+import {Login } from './Components/Auth/Login';
+import {Register} from './Components/Auth/Register';
 export default function Router() {
 
     return useRoutes([
@@ -26,7 +25,9 @@ export default function Router() {
         { path: 'myposts', element: 'element here' },
         { path: 'search/:query', element: <SearchResult /> },
         { path: 'searchv2/:query', element: <SearchResultIMDB /> },
-        
+        { path: 'login', element: <Login /> },
+        { path: 'register', element: <Register /> },
+
         // {
         //     path: '/',
         //     element: <LogoOnlyLayout />,

@@ -1,29 +1,70 @@
-import styled from '@emotion/styled';
-import React from 'react'
-import { Outlet } from 'react-router-dom';
-import Logo from '../Logo';
+import { IconButton, Popover } from '@mui/material'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import Iconify from '../../Hooks/Iconify'
+import useResponsive from '../../Hooks/useResponsive'
+import Search from '../Search/Search'
+import './Header.scss'
 
-const HeaderStyle = styled('header')(({ theme }) => ({
-    top: 0,
-    left: 0,
-    lineHeight: 0,
-    // width: '100%',
-    background: 'inherit',
-    position: 'static',
-    padding:3,
-    // padding: theme.spacing(3, 3, 0),
-    // [theme.breakpoints.up('sm')]: {
-    //     padding: theme.spacing(5, 5, 0),
-    // },
-}));
+const HeaderMain = 'love'
+const Header = () => {
+    const route = useNavigate();
+    const isMobile = useResponsive('down', 'md');
+    const [anchorEl, setAnchorEl] = useState(null);
 
-function Header() {
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
+
     return (
-        <>
-            <HeaderStyle >
-                <Logo />
-            </HeaderStyle>
-        </>
+        <div>
+            <div className="mainHeader">
+                <div className="left">
+                    {/* <div className="searchBar">
+                        <input type="text" />
+                        <button className='btn btn-sm btn-outline-warning'>Search</button>
+                    </div> */}
+                    <div>
+                        <IconButton className='popoverbtn' variant="contained" onClick={handleClick}>
+                            <Iconify icon='fluent:search-square-24-filled' width={34} height={34} />
+                        </IconButton>
+                        <Popover
+                            id={id}
+                            open={open}
+                            anchorEl={anchorEl}
+                            onClose={handleClose}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            }}>
+                            <div className='searchPopOver'>
+                                <h4 className='title'>Search</h4>
+                                <Search />
+                            </div>
+                            {/* <IconButton color='warning' >
+                                <Iconify icon='fluent:search-square-24-filled' width={34} height={34} /> </IconButton> */}
+                        </Popover>
+                    </div>
+                    {/* {!isMobile && <Search />} */}
+                </div>
+                <div className="center" onClick={() => route('/')}>
+                    <h3 className={isMobile ? 'titleSm' : "urbanist title"}>movieLog.</h3>
+                </div>
+                <div className="right">
+                    <button onClick={() => route('/')}>Home</button>
+                    <button onClick={() => route('/login')}>Login</button>
+                    <button onClick={() => route('/register')}>Register</button>
+                </div>
+
+            </div>
+        </div>
     )
 }
 

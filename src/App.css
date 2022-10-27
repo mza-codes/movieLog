@@ -1,23 +1,37 @@
-*{
+* {
     /* color: azure; */
     /* background: rgba(0, 0, 0, 0.295); */
     scroll-behavior: smooth;
+    font-family: 'Urbanist', sans-serif;
 }
-.blackText{
+
+.urbanist {
+    font-family: 'Urbanist', sans-serif;
+}
+
+.center {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.blackText {
     color: black !important;
 }
 
-.guardian{
+.guardian {
     font-family: guardianCity;
     font-style: inherit;
     font-weight: lighter;
 }
-.misty{
+
+.misty {
     font-family: misty;
     font-style: inherit;
     font-weight: lighter;
 }
-.lemosty{
+
+.lemosty {
     font-family: lemosty;
     font-style: inherit;
     font-weight: lighter;

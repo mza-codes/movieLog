@@ -11,6 +11,7 @@ import './search.scss'
 import styled from '@emotion/styled'
 import flags from './flags'
 import axios from 'axios'
+import Header from '../Header/Header'
 
 const StyledRating = styled(Rating)({
     '& .MuiRating-iconFilled': {
@@ -50,7 +51,7 @@ function SearchResultIMDB() {
         await axios.request(data).then((response) => {
             console.log('Rapid API Response Fetched', response.data)
             setResult(response.data.results)
-            sessionStorage.setItem('resv2',JSON.stringify(response.data.results))
+            sessionStorage.setItem('resv2', JSON.stringify(response.data.results))
         }).catch((error) => {
             console.log(error);
         });
@@ -65,22 +66,28 @@ function SearchResultIMDB() {
 
     return (
         <>
+            <Header />
             <div className="container-fluid">
                 <div className="row text-center py-2">
-                <h4 className="lemosty">Search Results for "{query}"</h4>
+                    <h4 className="lemosty">Search Results for "{query}"</h4>
                 </div>
-                    <div className="row">
-                        {result && result.length !==0 && result.map((data, i) => (
-                            <div key={data.id} className='col'>
-                                <img key={data.id} alt={data.title} className='resultPoster'
-                                    // src={`${data.image.url ? data.image.url : ''}`}
-                                    src={data?.image?.url} 
-                                    />
-                                    <p className="misty">{data.id}</p>
+                <div className="row">
+                    {result && result.length !== 0 && result.map((data, i) => (
+                        <div key={data.id} className='col'>
+                            <img key={data.id} alt={data.title} className='resultPoster'
+                                // src={`${data.image.url ? data.image.url : ''}`}
+                                src={data?.image?.url}
+                            />
+                            <div className="infoContainer">
+                                <span className="misty">{data?.title}</span>
+                                <span className="misty">{data?.titleType}</span>
+                                <span className="misty">{data?.year}</span>
+                                <a href={`https://imdb.com${data.id}`} target='_blank'>{data?.title}</a>
                             </div>
-                        ))}
-                    </div>
-                
+                        </div>
+                    ))}
+                </div>
+
             </div>
         </>
     )

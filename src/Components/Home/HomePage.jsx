@@ -4,10 +4,8 @@ import { POSTER_URL, w500 } from '../../Constants/Constants';
 import './Home.css'
 import './Home.scss'
 import { useRef } from 'react';
-import Search from '../Search/Search';
-import Logo from '../Logo';
 
-function HomePage({ list, search }) {
+function HomePage({ list}) {
 
     // console.log(list)
 
@@ -48,18 +46,18 @@ function HomePage({ list, search }) {
         <div style={{ backgroundImage: `url(${list.length !== 0 ? POSTER_URL + list[b].backdrop_path : ""})` }}
             className='bg fade_bottom'  >
             
-            {search && <> <Search component={
+            {/* {search && <> <Search component={
                 <> <div className="singleInput"> <select className="form-select text-dark form-select-sm"
                     onChange={(e) => setB(e.target.value)} > <option disabled>Select</option>
                     {list.map((itm, i) => (
                         <option key={i} value={i}>{i}</option>
                     ))} </select> </div>
-                </>} /> </>}
-                {!search && <div className="singleInput"> <select className="form-select text-dark form-select-sm"
+                </>} /> </>} */}
+                <div className="singleInput"> <select className="form-select text-dark form-select-sm"
                     onChange={(e) => setB(e.target.value)} > <option disabled>Select</option>
                     {list.map((itm, i) => (
                         <option key={i} value={i}>{i}</option>
-                    ))} </select> </div>}
+                    ))} </select> </div>
             <div className="container-fluid pt-5 text-white">
                 <div className="row">
                     <div className="col-12">

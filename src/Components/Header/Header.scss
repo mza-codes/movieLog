@@ -1,0 +1,56 @@
+.mainHeader{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 7vh;
+    // text-align: center;
+    // gap: 10px 10px;
+    padding: 10px;
+    background: #fc9652;
+    .left{
+        flex: 1;
+    }
+    .center{
+        text-align: center;
+        flex: 1;
+        .title{
+            font-weight: 700;
+            font-size: 30px;
+            cursor: pointer;
+        }
+        .titleSm{
+            font-weight: 700;
+            // font-size: 10px;
+            cursor: pointer;
+        }
+    }
+    .right{
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        flex: 1;
+        justify-content: flex-end;
+        button{
+            padding :10px;
+            border: none;
+            background-color: transparent;
+
+        }
+    }
+}
+
+.searchPopOver{
+    padding: 15px 5px;
+    .title{
+        margin: 0px 10px;
+        font-weight: 700;
+    }
+}
+
+.popoverbtn{
+    color: rgba(0, 0, 0, 0.418) !important;
+    :hover{
+        color: black;
+    }
+}
