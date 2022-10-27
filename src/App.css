@@ -15,6 +15,20 @@
     text-align: center;
 }
 
+/* custom CSS Colours */
+:root {
+    --header-bg: #fc9652;
+    --body-bg: #fc9652;
+    --footer-bg: #fc9652;
+}
+.light {
+    --header-bg: #fc9652;
+    --body-bg: #fc9652;
+    --footer-bg: #fc9652;
+}
+
+/* ------------------ */
+
 .blackText {
     color: black !important;
 }

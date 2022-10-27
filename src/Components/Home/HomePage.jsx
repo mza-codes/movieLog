@@ -5,7 +5,7 @@ import './Home.css'
 import './Home.scss'
 import { useRef } from 'react';
 
-function HomePage({ list}) {
+function HomePage({ list }) {
 
     // console.log(list)
 
@@ -42,10 +42,22 @@ function HomePage({ list}) {
         }
     }
 
+    const handleBg = (value) => {
+        if(value < 0){
+            setB(0)
+        }else
+        if (value >= list.length - 1) {
+            console.log('value >= list.length - 1 ::TRUE');
+            setB(0)
+        } else {
+            setB(value)
+        }
+    }
+
     return (
         <div style={{ backgroundImage: `url(${list.length !== 0 ? POSTER_URL + list[b].backdrop_path : ""})` }}
             className='bg fade_bottom'  >
-            
+
             {/* {search && <> <Search component={
                 <> <div className="singleInput"> <select className="form-select text-dark form-select-sm"
                     onChange={(e) => setB(e.target.value)} > <option disabled>Select</option>
@@ -53,11 +65,15 @@ function HomePage({ list}) {
                         <option key={i} value={i}>{i}</option>
                     ))} </select> </div>
                 </>} /> </>} */}
-                <div className="singleInput"> <select className="form-select text-dark form-select-sm"
-                    onChange={(e) => setB(e.target.value)} > <option disabled>Select</option>
+            <div className="singleInput">
+                <select onChange={(e) => setB(e.target.value)} >
+                    {/* <option disabled>0</option> */}
                     {list.map((itm, i) => (
                         <option key={i} value={i}>{i}</option>
-                    ))} </select> </div>
+                    ))}
+                </select>
+                
+            </div>
             <div className="container-fluid pt-5 text-white">
                 <div className="row">
                     <div className="col-12">

@@ -9,7 +9,7 @@ import './Header.scss'
 const HeaderMain = 'love'
 const Header = () => {
     const route = useNavigate();
-    const isMobile = useResponsive('down', 'md');
+    const isMd = useResponsive('down', 'md');
     const [anchorEl, setAnchorEl] = useState(null);
 
     const handleClick = (event) => {
@@ -52,10 +52,10 @@ const Header = () => {
                                 <Iconify icon='fluent:search-square-24-filled' width={34} height={34} /> </IconButton> */}
                         </Popover>
                     </div>
-                    {/* {!isMobile && <Search />} */}
+                    {/* {!isMd && <Search />} */}
                 </div>
                 <div className="center" onClick={() => route('/')}>
-                    <h3 className={isMobile ? 'titleSm' : "urbanist title"}>movieLog.</h3>
+                    <h3 className={isMd ? 'titleSm' : "urbanist title"}>movieLog.</h3>
                 </div>
                 <div className="right">
                     <button onClick={() => route('/')}>Home</button>

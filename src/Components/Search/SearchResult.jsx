@@ -20,7 +20,7 @@ const StyledRating = styled(Rating)({
         color: '#ff3d47',
     },
 });
-
+// logo TMDB Iconify 'cib:the-movie-database'
 function SearchResult() {
     const params = useParams()
     const query = params.query
@@ -38,7 +38,7 @@ function SearchResult() {
     return (
         <>
         <Header />
-            <div className="container-fluid">
+            <div className="container-fluid resBg">
                 <div className='result'>
                     <div className="row">
                         <h4 className="lemosty">Search Results for "{query}"</h4>

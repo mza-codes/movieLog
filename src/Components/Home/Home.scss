@@ -26,26 +26,24 @@
 .singleInput{
     display: flex;
     flex-direction: row;
-    // align-items: center;
-    
-    label{
-        padding: 10px;
-    }
-    input{
-        max-width: 50px;
-        padding: 5px;
-        // text-align: center;
-    }
+    width: 50px;
     select{
-        max-width: 70px;
-        padding: 5px;
-        margin: 5px;
+        border: none;
+        background: transparent;
+        color:white !important;
+        padding: 10px 5px;
+        outline: none;
     }
-    button{
-        margin: 5px;
+    select:active{
+        border: none;
+        background: transparent;
     }
-    span{
-        font-size: small;
+    select:focus{
+        border: none;
+        background: transparent;
+    }
+    select:hover{
+        color: rgba(0, 0, 0, 0.842) !important;
     }
 }
 
