@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react';
 import axios from 'axios'
-import { originals, topRated } from '../../Constants/urls';
+import { action2, originals, topRated, trending2 } from '../../Constants/urls';
 import HomePage from './HomePage';
 import '../../App.css';
 
@@ -38,10 +38,10 @@ export default function Home() {
 
     const fetchData = async () => {
         const orig = 'orig'
-        const data = await fetchMovies(originals, orig)
+        const data = await fetchMovies(action2, orig)
         setMovies(data)
         const top = 'top'
-        const dat = await fetchMovies(topRated, top)
+        const dat = await fetchMovies(trending2, top)
         setMovies2(dat)
     }
 
@@ -62,8 +62,9 @@ export default function Home() {
 
     return (
         <div className='App'>
+            {/* <Header /> */}
             <HomePage list={movies ? movies : []} search={true} />
-            <HomePage list={movies2 ? movies2 : []} />
+            <HomePage list={movies2 ? movies2 : []} search={false} />
         </div>
     )
 }

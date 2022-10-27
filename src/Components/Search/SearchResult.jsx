@@ -80,8 +80,8 @@ function SearchResult() {
                         <h5 className="misty">{movie?.release_date}</h5>
                         {/* <h6 className="misty">{movie?.popularity}</h6> */}
                         <h5 aria-label='the flags are generated using math.random' className=""
-                        >{movie && movie.original_language ? <> <i className={`fi fi-${flags[v]}`} />
-                            &nbsp; {movie.original_language.toUpperCase()}</> : ''}</h5>
+                        >{movie && movie?.original_language ? <> <i className={`fi fi-${flags[v]}`} />
+                            &nbsp; {movie?.original_language?.toUpperCase()}</> : ''}</h5>
 
                     </div>
                 </div>}

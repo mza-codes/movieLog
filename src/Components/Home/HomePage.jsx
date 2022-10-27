@@ -5,20 +5,20 @@ import './Home.css'
 import './Home.scss'
 import { useRef } from 'react';
 import Search from '../Search/Search';
+import Logo from '../Logo';
 
 function HomePage({ list, search }) {
 
     // console.log(list)
 
-    // let v = Math.floor(Math.random() * list.length);
+    let v = Math.floor(Math.random() * list.length);
     const elRef = useRef()
-    const [b, setB] = useState(Math.floor(Math.random() * list.length))
-    const [v, setV] = useState(0)
+    const [b, setB] = useState(v)
+    // const [v, setV] = useState(0)
     const [movie, setMovie] = useState()
     // let b = Math.floor(Math.random() * list.length);
     // let c = Math.floor(Math.random() * list.length);
     useEffect(() => {
-        console.log('useEffect Worked');
         scrollHoriz()
     }, [])
 
@@ -47,16 +47,19 @@ function HomePage({ list, search }) {
     return (
         <div style={{ backgroundImage: `url(${list.length !== 0 ? POSTER_URL + list[b].backdrop_path : ""})` }}
             className='bg fade_bottom'  >
-            {/* <React.Fragment>
-                <footer > */}
-
-            {search && <Search component={
+            
+            {search && <> <Search component={
                 <> <div className="singleInput"> <select className="form-select text-dark form-select-sm"
                     onChange={(e) => setB(e.target.value)} > <option disabled>Select</option>
                     {list.map((itm, i) => (
                         <option key={i} value={i}>{i}</option>
                     ))} </select> </div>
-                </>} />}
+                </>} /> </>}
+                {!search && <div className="singleInput"> <select className="form-select text-dark form-select-sm"
+                    onChange={(e) => setB(e.target.value)} > <option disabled>Select</option>
+                    {list.map((itm, i) => (
+                        <option key={i} value={i}>{i}</option>
+                    ))} </select> </div>}
             <div className="container-fluid pt-5 text-white">
                 <div className="row">
                     <div className="col-12">
@@ -78,8 +81,6 @@ function HomePage({ list, search }) {
                     </div>
                 </div> */}
             </div>
-            {/* </footer>
-            </React.Fragment> */}
         </div>
     )
 }

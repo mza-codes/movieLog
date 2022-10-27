@@ -40,15 +40,13 @@
         display: flex;
         flex-direction: column;
     }
-
+    input:focus{
+        border: 2px solid rgb(255, 255, 255);
+        outline: none;
+    }
     .select {
         // float: right;
         margin-left: auto;
-    }
-
-    input:focus {
-        /* removing the input focus blue box */
-        outline: none;
     }
 
     button {
@@ -94,13 +92,17 @@
 }
 
 .movie {
-
+    
     img {
+        display: flex;
+        margin: auto;
         max-width: 40vw;
         max-height: 50vh;
         width: auto !important;
     }
-
+    .content{
+        max-width: 540px;
+    }
     .rating {
         display: flex;
         flex-direction: row;
