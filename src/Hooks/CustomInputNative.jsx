@@ -8,7 +8,8 @@ const CustomInputNative = ({ ...props }) => {
             <input
                 className={meta.error && meta.touched ? 'error' : !meta.error && meta.touched ? 'success' : 'normal'}
                 {...field} {...props} />
-            <br /><p className="errorText">{meta.error && meta.touched ? '*' + meta.error : ''}</p>
+                <p className="label">{props.label}</p>
+            <p className="errMsg">{meta.error && meta.touched ? '*' + meta.error : ''}</p>
         </div>
     )
 }

@@ -8,6 +8,11 @@
         border-radius: 8px;
         padding: 8px;
         text-align: center;
+        width: 100%;
+        max-width: 500px;
+        min-width: 300px;
+        margin: 20px 0px;
+        // max-width: 400px;
     }
 
     input[type="password"] {
@@ -32,13 +37,22 @@
         border: 2px solid blueviolet;
     }
 
-    .errorText {
+    .label{
+        position: absolute;
+        color: rgb(255, 255, 255);
+        font-weight: 500;
+        font-size: medium;
+        top: -14px;
+        left: auto;
+    }
+    .errMsg {
         position: absolute;
         color: red;
         font-weight: 500;
         font-size: small;
-        bottom: -10px;
-        left: 10px;
+        bottom: -30px;
+        right: 10px;
+        padding: 5px 0px;
     }
 
     input:focus {

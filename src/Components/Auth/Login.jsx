@@ -7,9 +7,12 @@ import './auth.scss'
 import { Form, Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import CustomInputNative from '../../Hooks/CustomInputNative';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebaseConfig/firebase';
 
 export const Login = () => {
     const [list, setList] = useState([]);
+    const [errors, setErrors] = useState()
     const route = useNavigate();
     let v = Math.floor(Math.random() * list.length);
     let data = sessionStorage.getItem('top');
@@ -35,6 +38,9 @@ export const Login = () => {
     const handleLogin = (values, actions) => {
         console.log(values);
         // sign in code 
+        signInWithEmailAndPassword(auth, values.email, values.password).then((user) => {
+            console.log(user);
+        }).catch(err => { console.log('ErrOccued', err); setErrors(err) })
     }
 
     const loginSchema = Yup.object().shape({
@@ -45,7 +51,10 @@ export const Login = () => {
     return (<>
         <Header />
         {/* style={{ backgroundImage: `url(${list.length !== 0 ? POSTER_URL + list[b].backdrop_path : ""})` }} */}
-        <div style={{ backgroundImage: `url(${list.length !== 0 ? POSTER_URL + list[v].backdrop_path : ""})` }}
+        <div style={{
+            backgroundImage: `url(${list.length !== 0 ? POSTER_URL + list[v].backdrop_path
+                : "https://picsum.photos/1920/1080"})`
+        }}
             className='container-fluid loginBg' >
             <div className="row center ">
                 <div className="col-12 ">
@@ -57,11 +66,14 @@ export const Login = () => {
                                 <Form spellCheck>
                                     <CustomInputNative type='text' name='email' label='Email' />
                                     <CustomInputNative type='password' name='password' label='Password' />
+
+                                    <br />
                                     <button type="submit" disabled={!props.isValid}
-                                        className={props.isValid ? "btn-sm btn btn-success" :
-                                            "btn-sm btn btn-outline-warning"}>Log In</button>
+                                        className="btn btn-outline-warning">Submit</button>
                                     <br />
                                     <p className='link' onClick={() => route('/register')}>Create an Account ?</p>
+                                    <br />
+                                    {errors?.message && <span className="errorText">{errors?.message}</span>}
                                 </Form>
                             )}
                         </Formik>

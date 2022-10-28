@@ -11,6 +11,7 @@ import './search.scss'
 import styled from '@emotion/styled'
 import flags from './flags'
 import Header from '../Header/Header'
+import lozad from 'lozad'
 
 const StyledRating = styled(Rating)({
     '& .MuiRating-iconFilled': {
@@ -33,11 +34,16 @@ function SearchResult() {
         const dat = JSON.parse(sessionStorage.getItem(temp[c]))
         setList(dat)
 
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        const observer = lozad();
+        observer.observe()
+    });
 
     return (
         <>
-        <Header />
+            <Header />
             <div className="container-fluid resBg">
                 <div className='result'>
                     <div className="row">
@@ -47,7 +53,7 @@ function SearchResult() {
                         <div className="poster">
                             {list.map((itm, i) => (
                                 <div key={itm.id} >
-                                    <img onClick={() => setMovie(itm)} alt="movie_poster"
+                                    <img onClick={() => setMovie(itm)} alt="movie_poster" className='lozad'
                                         src={itm ? w500 + itm.poster_path || w500 + itm.backdrop_path : ''} />
                                 </div>
                             ))}
@@ -56,7 +62,8 @@ function SearchResult() {
                 </div>
                 {movie && <div className="row movie" >
                     <div className="col-12 col-md-6 poster">
-                        <img src={movie ? w500 + movie?.poster_path || w500 + movie?.backdrop_path : ''} alt="movie_poster" />
+                        <img className='lozad' alt="movie_poster"
+                            src={movie ? w500 + movie?.poster_path || w500 + movie?.backdrop_path : ''} />
                     </div>
                     <div className="col-12 col-md-6 content">
                         {console.log(movie)}

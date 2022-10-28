@@ -15,52 +15,81 @@
 .loginForm {
     // transform: translateY(100%);
     padding-top: 10rem;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
 
-    span{
-        color: red;
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .errorText {
+        color: white;
         font-weight: 500;
         font-size: small;
         margin: 5px 0px;
+        border: 2px solid red;
+        border-radius: 18px;
+        padding: 10px 8px;
     }
-    .link{
+
+    .errorText:hover {
+        border: 2px solid red;
+        background-color: black;
+        cursor: default;
+    }
+
+    .link {
         cursor: pointer;
         color: rgb(0, 195, 255);
     }
-    .link:hover{
+
+    .link:hover {
         color: rgb(228, 148, 0);
     }
+
     label {
         padding: 10px;
     }
 
-    button {
+    .submitBtn {
         margin: 10px;
         padding: 5px 15px;
         border-radius: 10px;
     }
-
-    input {
-        margin: 5px;
-        max-width: 500px;
-        width: 350px;
+    .gSignBtn{
+        background-color: rgba(255, 255, 255, 0.123);
+        padding: 10px 20px;
+        border-radius: 10px;
     }
+    .gSignBtn:hover{
+        background-color: rgba(0, 0, 0, 0.205); 
+    }
+    // input {
+    //     margin: 5px;
+    //     max-width: 400px;
+    //     min-width: 350px !important;
+    //     // width: 350px;
+    // }
 
     h3 {
         padding: 5px;
     }
 
-    a{
+    a {
         cursor: pointer;
     }
 
 }
 
-.login{
+.login {
     font-size: xx-large;
     font-weight: 600;
 }
+
+.mailSent {
+    color: greenyellow;
+    margin: 10px;
+}
+

@@ -1,30 +1,29 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react';
 import { POSTER_URL, w500 } from '../../Constants/Constants';
-import './Home.css'
-import './Home.scss'
+import './Home.scss';
 import { useRef } from 'react';
+import lozad from 'lozad';
 
 function HomePage({ list }) {
-
-    // console.log(list)
-
-    let v = Math.floor(Math.random() * list.length);
     const elRef = useRef()
-    const [b, setB] = useState(v)
-    // const [v, setV] = useState(0)
+    const [b, setB] = useState(5)
     const [movie, setMovie] = useState()
-    // let b = Math.floor(Math.random() * list.length);
-    // let c = Math.floor(Math.random() * list.length);
+
     useEffect(() => {
-        scrollHoriz()
-    }, [])
+        scrollHoriz();
+        setB(Math.floor(Math.random() * list.length));
+    }, []);
 
     useEffect(() => {
         setMovie(list[b])
         console.log(list[b]);
-    }, [b])
+    }, [b]);
 
+    useEffect(() => {
+        const observer = lozad();
+        observer.observe()
+    });
 
     const scrollHoriz = () => {
         const el = elRef.current;
@@ -56,7 +55,7 @@ function HomePage({ list }) {
 
     return (
         <div style={{ backgroundImage: `url(${list.length !== 0 ? POSTER_URL + list[b].backdrop_path : ""})` }}
-            className='bg fade_bottom'  >
+            className='bg fade_bottom lozad'  >
 
             {/* {search && <> <Search component={
                 <> <div className="singleInput"> <select className="form-select text-dark form-select-sm"

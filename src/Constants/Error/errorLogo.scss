@@ -1,0 +1,45 @@
+.errorLogo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+
+    img {
+        // width: 100%;
+        // height: 100%;
+        object-fit: cover;
+        max-width: 100vw;
+        max-height: 78vh;
+    }
+
+    .title {
+        font-weight: 500;
+        position: absolute;
+        // right: 5px;
+        top: 25px;
+        color: #E5E5E5;
+
+    }
+
+    .message {
+        font-weight: 500;
+        position: absolute;
+        // right: 5px;
+        bottom: 0px;
+        color: #E5E5E5;
+    }
+
+    .color {
+        // color: #E2134E #231F20 #E5E5E5;
+        color: #ff2626 #231F20 #E5E5E5;
+    }
+}
+
+@media (max-width: 599px) {
+    .errorLogo {
+        position: initial;
+    }
+}

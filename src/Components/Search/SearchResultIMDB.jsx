@@ -172,7 +172,7 @@ function SearchResultIMDB() {
                                         width={20} height={20} color='black' /> &nbsp;{data?.year} </span>
                                 {data?.image?.url && <div>
                                     <button onClick={() => downloadPoster(data?.image?.url, data?.title?.slice(0, 25))}>
-                                        <Iconify icon='fa6-solid:download' width={30} height={30} /> </button>
+                                        <Iconify icon='fa6-solid:download' width={20} height={20} /> </button>
                                 </div>}
                             </div>
                         </div>

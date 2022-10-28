@@ -49,7 +49,7 @@
         button {
             width: 70%;
             border: none;
-            background: transparent;
+            background: wheat ;
             color: rgb(0, 0, 0);
             padding: 10px 0px;
         }
@@ -88,14 +88,16 @@
     }
 }
 
-.resultRow::-webkit-scrollbar {
+.resultRow::-webkit-scrollbar{
     display: none;
+    scrollbar-width: none; // firefox scrollbar hide
 }
 
 .resultRow {
     display: flex;
     flex-direction: row;
-    // overflow-y: hidden;
+    overflow-y: hidden;
+    scrollbar-width: none; // firefox scrollbar hide
     overflow-x: scroll;
 
     div {

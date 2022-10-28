@@ -1,10 +1,23 @@
-import { useRoutes } from "react-router-dom";
+import { Navigate, useRoutes } from "react-router-dom";
 import Home from "./Components/Home/Home";
 import SearchResult from "./Components/Search/SearchResult";
 import SearchResultIMDB from "./Components/Search/SearchResultIMDB";
-import {Login } from './Components/Auth/Login';
-import {Register} from './Components/Auth/Register';
+import { Login } from './Components/Auth/Login';
+import { Register } from './Components/Auth/Register';
+import { useContext } from "react";
+import { AuthContex } from "./Contexts/AuthContext";
+import ErrorLogo from "./Constants/Error/ErrorLogo";
+
 export default function Router() {
+    const { user } = useContext(AuthContex);
+    const Protected = ({ user, children }) => {
+        console.log('PROTECTED ROUTE =>', user);
+        if (!user) {
+            return children;
+        } else {
+            return <Navigate to="/" replace />;
+        }
+    };
 
     return useRoutes([
         {
@@ -25,8 +38,8 @@ export default function Router() {
         { path: 'myposts', element: 'element here' },
         { path: 'search/:query', element: <SearchResult /> },
         { path: 'searchv2/:query', element: <SearchResultIMDB /> },
-        { path: 'login', element: <Login /> },
-        { path: 'register', element: <Register /> },
+        { path: 'login', element: <Protected user={user}> <Login /> </Protected> },
+        { path: 'register', element: <Protected user={user}> <Register /> </Protected> },
 
         // {
         //     path: '/',
@@ -37,9 +50,9 @@ export default function Router() {
         //         { path: '*', element: <Navigate to="/404" /> },
         //     ],
         // },
-        // {
-        //     path: '*',
-        //     element: <Navigate to="/404" replace />,
-        // },
+        {
+            path: '*',
+            element: <ErrorLogo />,
+        },
     ]);
 }
