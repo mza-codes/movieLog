@@ -15,46 +15,25 @@ const Header = () => {
     const isMd = useResponsive('down', 'md');
     const [anchorEl, setAnchorEl] = useState(null);
     const { user } = useContext(AuthContex)
-
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
     const [menuPop, setMenuPop] = useState(null);
+    const [notifyPopUp, setNotifyPopUp] = useState(null);
 
-    const handleClick2 = (event) => {
-        setMenuPop(event.currentTarget);
-    };
-
-    const handleClose2 = () => {
-        setMenuPop(null);
-    };
-
-    const open = Boolean(anchorEl);
-    const open2 = Boolean(menuPop);
-    const id = open ? 'simple-popover' : undefined;
+    const openSearch = Boolean(anchorEl);
+    const openMenu = Boolean(menuPop);
+    const openNotify = Boolean(notifyPopUp);
 
     return (
         <div>
             <div className="mainHeader">
                 <div className="left">
-                    {/* <div className="searchBar">
-                        <input type="text" />
-                        <button className='btn btn-sm btn-outline-warning'>Search</button>
-                    </div> */}
                     <div>
-                        <IconButton className='popoverbtn' variant="contained" onClick={handleClick}>
+                        <IconButton className='popoverbtn' variant="contained" onClick={e => setAnchorEl(e.currentTarget)}>
                             <Iconify icon='fluent:search-square-24-filled' width={34} height={34} />
                         </IconButton>
                         <Popover
-                            id={id}
-                            open={open}
+                            open={openSearch}
                             anchorEl={anchorEl}
-                            onClose={handleClose}
+                            onClose={e => setAnchorEl(null)}
                             anchorOrigin={{
                                 vertical: 'bottom',
                                 horizontal: 'left',
@@ -63,41 +42,71 @@ const Header = () => {
                                 <h4 className='title'>Search</h4>
                                 <Search />
                             </div>
-                            {/* <IconButton color='warning' >
-                                <Iconify icon='fluent:search-square-24-filled' width={34} height={34} /> </IconButton> */}
                         </Popover>
                     </div>
-                    {/* {!isMd && <Search />} */}
                 </div>
+
                 <div className="center" onClick={() => route('/')}>
                     <h3 className={isMd ? 'urbanist titleSm' : "urbanist title"}>movieLog.</h3>
                 </div>
+
                 <div className="right">
+                    <IconButton className='popoverbtn' onClick={e => setNotifyPopUp(e.currentTarget)}>
+                        <Iconify icon='ic:baseline-notifications-active' width={26} height={26} />
+                    </IconButton>
+                    <Popover
+                        // id={id}
+                        open={openNotify}
+                        anchorEl={notifyPopUp}
+                        onClose={e => setNotifyPopUp(null)}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        }}>
+                        <div className="notifications">
+                            <button onClick={() => route('/')}>Home</button>
+                            {user ? <>
+                                <button onClick={e => signOut(auth)}>Logout</button>
+                                <button onClick={e => route('/profile')}>Profile</button>
+                            </> : <>
+                                <button onClick={() => route('/login')}>Login</button>
+                                <button onClick={() => route('/register')}>Register</button>
+                            </>}
+
+                        </div>
+                    </Popover>
                     {isMd ? <div>
-                        <IconButton className='popoverbtn' variant="contained" onClick={handleClick2}>
+                        <IconButton className='popoverbtn' variant="contained" onClick={e => setMenuPop(e.currentTarget)}>
                             <Iconify icon='eva:menu-2-outline' width={34} height={34} />
                         </IconButton>
                         <Popover
                             // id={id}
-                            open={open2}
+                            open={openMenu}
                             anchorEl={menuPop}
-                            onClose={handleClose2}
+                            onClose={e => setMenuPop(null)}
                             anchorOrigin={{
                                 vertical: 'bottom',
                                 horizontal: 'right',
                             }}>
                             <div className="navPop">
-                                {user && <button onClick={e => signOut(auth)}>Logout</button>}
                                 <button onClick={() => route('/')}>Home</button>
-                                {!user && <> <button onClick={() => route('/login')}>Login</button>
-                                    <button onClick={() => route('/register')}>Register</button> </>}
+                                {user ? <>
+                                    <button onClick={e => signOut(auth)}>Logout</button>
+                                    <button onClick={e => route('/profile')}>Profile</button>
+                                </> : <>
+                                    <button onClick={() => route('/login')}>Login</button>
+                                    <button onClick={() => route('/register')}>Register</button>
+                                </>}
+
                             </div>
                         </Popover>
                     </div> : <>
-                        {user && <button onClick={e => signOut(auth)}>Logout</button>}
                         <button onClick={() => route('/')}>Home</button>
-                        {!user && <> <button onClick={() => route('/login')}>Login</button>
-                            <button onClick={() => route('/register')}>Register</button> </>} </>}
+                        {user ? <> <button onClick={e => signOut(auth)}>Logout</button>
+                            <button onClick={e => route('/profile')}>Profile</button>
+                        </> : <> <button onClick={() => route('/login')}>Login</button>
+                            <button onClick={() => route('/register')}>Register</button>
+                        </>} </>}
                 </div>
 
             </div>

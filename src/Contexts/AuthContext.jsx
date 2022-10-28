@@ -6,6 +6,7 @@ export const AuthContex = createContext(null);
 
 export default function AuthContexProvider({ children }) {
     const [user, setUser] = useState(null);
+    const [userProp,setUserProp] = useState(null);
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, (user) => {
             setUser(user);
@@ -19,7 +20,7 @@ export default function AuthContexProvider({ children }) {
     }, []);
 
     return (
-        <AuthContex.Provider value={{ user, setUser }}>
+        <AuthContex.Provider value={{ user, setUser, userProp, setUserProp }}>
             {children}
         </AuthContex.Provider>
     )

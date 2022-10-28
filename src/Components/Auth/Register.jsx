@@ -7,11 +7,12 @@ import './auth.scss'
 import { Form, Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import CustomInputNative from '../../Hooks/CustomInputNative';
-import { isSignInWithEmailLink, sendSignInLinkToEmail, signInWithEmailAndPassword, signInWithEmailLink } from 'firebase/auth';
-import { auth } from '../../firebaseConfig/firebase';
-import { IconButton } from '@mui/material';
+import { GoogleAuthProvider, isSignInWithEmailLink, sendSignInLinkToEmail, signInWithEmailAndPassword, signInWithEmailLink, signInWithPopup } from 'firebase/auth';
+import { auth, db } from '../../firebaseConfig/firebase';
+import { Button, IconButton } from '@mui/material';
 import Iconify from '../../Hooks/Iconify';
 import { AuthContex } from '../../Contexts/AuthContext';
+import { collection, doc, getDoc, query, serverTimestamp, setDoc, Timestamp } from 'firebase/firestore';
 
 export const Register = () => {
     const [list, setList] = useState([]);
@@ -20,7 +21,7 @@ export const Register = () => {
     const [verifyEmail, setVerifyEmail] = useState('')
     let v = Math.floor(Math.random() * list.length);
     let data = sessionStorage.getItem('top');
-    const { setUser } = useContext(AuthContex);
+    const { setUser, setUserProp } = useContext(AuthContex);
 
     const fetchBg = () => {
         if (!data) {
@@ -71,7 +72,30 @@ export const Register = () => {
             });
     }
 
-    const emailLinkLogin = () => {
+    const signInWithGmail = () => {
+        console.log('SIGN IN WITH GMAIL');
+        const provider = new GoogleAuthProvider();
+
+        signInWithPopup(auth, provider).then((result) => {
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
+            const newUser = result.user;
+            setUser(newUser);
+            route('/');
+            // const q = query(collection(db, 'webusers'), where('id', '==', newUser.uid))
+            // getDocs(q).then((result) => {
+            //     if (result.docs.length === 0) {
+            //         console.log('No User Document found');
+            //         storeUser(newUser)
+            //     } else {
+            //         console.log('COMPLETE');
+            //         route('/')
+            //     }
+            // })
+        }).catch(err => console.log(err));
+    }
+
+    const emailLinkLogin = async () => {
         if (isSignInWithEmailLink(auth, window.location.href)) {
             // Additional state parameters can also be passed via URL.
             // This can be used to continue the user's intended action before triggering
@@ -86,14 +110,28 @@ export const Register = () => {
             }
             // The client SDK will parse the code from the link for you.
             signInWithEmailLink(auth, email, window.location.href)
-                .then((result) => {
+                .then(async(result) => {
                     // Clear email from storage.
                     window.localStorage.removeItem('emailForSignIn');
                     // You can access the new user via result.user
                     console.log(result);
                     console.log('FETCHED USER', result.user);
                     setUser(result.user);
-                    route('/');
+                    const snap = await getDoc(doc(db, 'webusers', result.user.uid))
+                    if (snap.exists()) {
+                        console.log('DATA EXISTS');
+                        route('/');
+                    } else {
+                        setDoc(doc(db, "webusers", result.user.uid), {
+                            userName: "",
+                            email: result?.user?.email,
+                            emailVerified: result?.user?.emailVerified,
+                            joinDate: result?.user?.metadata?.creationTime,
+                            joinedTime: result?.user?.metadata?.createdAt,
+                        });
+                        console.log('ADDED DATA');
+                        route('/');
+                    }
                     // Additional user info profile not available via:
                     // result.additionalUserInfo.profile == null
                     // You can check if the user is new or existing:
@@ -136,11 +174,12 @@ export const Register = () => {
                                     <CustomInputNative type='text' name='email' label='Email' />
                                     <button type="submit" disabled={!props.isValid}
                                         className={"submitBtn btn btn-outline-warning"}>Submit</button>
-                                    {/* <br /> */}
+
                                     <p className='link' onClick={() => route('/login')}>Already have an Account ?</p>
                                     {errors?.message && <span className="errorText">{errors?.message}</span>}
-                                    <IconButton onClick={disableAccess} className='gSignBtn'> <Iconify width={28} height={28}
-                                        icon='flat-color-icons:google' /> </IconButton>
+                                    <IconButton onClick={signInWithGmail} className='gSignBtn'> <Iconify width={28} height={28}
+                                        icon='logos:google-icon' /> </IconButton>
+
                                 </Form>
                             )}
                         </Formik>
@@ -148,6 +187,8 @@ export const Register = () => {
                     {verifyEmail && <h5 style={{ marginTop: '1rem' }} className="mailSent">
                         Verification Link Successfully sent to "{verifyEmail}" <br />
                         Please Verify Your Email !</h5>}
+                    <h6 style={{ margin: '20px' }}>movieLog does not Support SignUp with Email & Password as of Now ! <br />
+                        Please Use Email Link Verification For SignUp </h6>
                 </div>
             </div>
         </div>

@@ -7,6 +7,7 @@ import { Register } from './Components/Auth/Register';
 import { useContext } from "react";
 import { AuthContex } from "./Contexts/AuthContext";
 import ErrorLogo from "./Constants/Error/ErrorLogo";
+import Profile from "./Pages/Profile/Profile";
 
 export default function Router() {
     const { user } = useContext(AuthContex);
@@ -16,6 +17,15 @@ export default function Router() {
             return children;
         } else {
             return <Navigate to="/" replace />;
+        }
+    };
+
+    const UserRoute = ({ user, children }) => {
+        console.log('USerRoute ROUTE =>', user);
+        if (!user) {
+            return <Navigate to="/" replace />;
+        } else {
+            return children;
         }
     };
 
@@ -40,6 +50,7 @@ export default function Router() {
         { path: 'searchv2/:query', element: <SearchResultIMDB /> },
         { path: 'login', element: <Protected user={user}> <Login /> </Protected> },
         { path: 'register', element: <Protected user={user}> <Register /> </Protected> },
+        { path: 'profile', element: <UserRoute user={user}> <Profile /> </UserRoute> },
 
         // {
         //     path: '/',
