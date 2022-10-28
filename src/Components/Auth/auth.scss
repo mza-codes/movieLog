@@ -21,6 +21,19 @@
     display: flex;
     flex-direction: column;
 
+    span{
+        color: red;
+        font-weight: 500;
+        font-size: small;
+        margin: 5px 0px;
+    }
+    .link{
+        cursor: pointer;
+        color: rgb(0, 195, 255);
+    }
+    .link:hover{
+        color: rgb(228, 148, 0);
+    }
     label {
         padding: 10px;
     }
@@ -41,4 +54,13 @@
         padding: 5px;
     }
 
+    a{
+        cursor: pointer;
+    }
+
+}
+
+.login{
+    font-size: xx-large;
+    font-weight: 600;
 }

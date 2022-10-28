@@ -2,23 +2,24 @@ import Header from '../Header/Header'
 import lozad from 'lozad'
 import { useEffect, useState } from 'react'
 import { POSTER_URL } from '../../Constants/Constants';
-import './style.scss'
+import * as Yup from 'yup'
+import './auth.scss'
+import { Form, Formik } from 'formik';
+import { useNavigate } from 'react-router-dom';
+import CustomInputNative from '../../Hooks/CustomInputNative';
 
 export const Login = () => {
-    const [bg, setBg] = useState('');
-    const [list,setList] = useState([]);
+    const [list, setList] = useState([]);
+    const route = useNavigate();
     let v = Math.floor(Math.random() * list.length);
     let data = sessionStorage.getItem('top');
+
     const fetchBg = () => {
         if (!data) {
             // case
         } else {
             let value = JSON.parse(data)
-            
             setList(value)
-            let image = value[v].backdrop_path;
-            setBg(image);
-            console.log(image);
         }
     }
 
@@ -31,56 +32,42 @@ export const Login = () => {
         fetchBg()
     }, [])
 
+    const handleLogin = (values, actions) => {
+        console.log(values);
+        // sign in code 
+    }
+
+    const loginSchema = Yup.object().shape({
+        email: Yup.string().email('Invalid Email').required('Required Field !').max(30, 'Email too Long !').min(5, 'Email too Short!'),
+        password: Yup.string().required('Required Field !').max(30, 'Password too Long !').min(5, 'Password too Short!')
+    })
 
     return (<>
         <Header />
         {/* style={{ backgroundImage: `url(${list.length !== 0 ? POSTER_URL + list[b].backdrop_path : ""})` }} */}
         <div style={{ backgroundImage: `url(${list.length !== 0 ? POSTER_URL + list[v].backdrop_path : ""})` }}
             className='container-fluid loginBg' >
-            {/* <React.Fragment>
-                <main> */}
             <div className="row center ">
-                <div className="col-12 col-md-6">
+                <div className="col-12 ">
                     <div className="loginForm text-center">
-                        <h1 className='misty' > Login </h1>
-                        <form>
-                            <div className="form-group ">
-                                <label >Email address</label>
-                                <input type="email" className="form-control" required placeholder="Enter E-Mail" />
-                            </div>
-                            <div className="form-group ">
-                                <label >Password</label>
-                                <input type="password" className="form-control" required placeholder="Enter a Password" />
-                            </div>
-
-                            <button type="submit" className="btn-sm btn btn-outline-warning">Log In</button>
-                        </form>
+                        <h1 className='login pb-3'> Login </h1>
+                        <Formik initialValues={{ email: '', password: '' }}
+                            validationSchema={loginSchema} onSubmit={handleLogin}>
+                            {props => (
+                                <Form spellCheck>
+                                    <CustomInputNative type='text' name='email' label='Email' />
+                                    <CustomInputNative type='password' name='password' label='Password' />
+                                    <button type="submit" disabled={!props.isValid}
+                                        className={props.isValid ? "btn-sm btn btn-success" :
+                                            "btn-sm btn btn-outline-warning"}>Log In</button>
+                                    <br />
+                                    <p className='link' onClick={() => route('/register')}>Create an Account ?</p>
+                                </Form>
+                            )}
+                        </Formik>
                     </div>
                 </div>
-                {/* <div className="col-12 col-md-6">
-                            <div className="myForm text-center">
-                                <h1 className='misty' > Register </h1>
-                                <form>
-                                    <div className="form-group ">
-                                        <label >Email Address</label>
-                                        <input type="email" className="form-control" required placeholder="Enter E-Mail" />
-                                    </div>
-                                    <div className="form-group ">
-                                        <label >Display Name</label>
-                                        <input type="text" className="form-control" required placeholder="Enter UserName" />
-                                    </div>
-                                    <div className="form-group ">
-                                        <label >Password</label>
-                                        <input type="password" className="form-control" required placeholder="Enter a Password" />
-                                    </div>
-
-                                    <button type="submit" className="btn-sm btn btn-outline-warning">Sign Up</button>
-                                </form>
-                            </div>
-                        </div> */}
             </div>
-            {/* </main>
-            </React.Fragment> */}
         </div>
     </>)
 }

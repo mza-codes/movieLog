@@ -163,7 +163,7 @@ function SearchResultIMDB() {
                             <div className="infoContainer">
                                 {/* <span className="misty">{data?.title}</span> */}
                                 <Tooltip title={data?.title}>
-                                    <a href={`https://imdb.com${data.id}`} target='_blank'>
+                                    <a href={`https://imdb.com${data.id}`} target='_blank' rel='noreferrer'>
                                         <Iconify icon='fontisto:imdb' color='#DBA506' borderRadius={1}
                                             height={20} width={20} />&nbsp;{data?.title?.substring(0, 30) + ''}</a>
                                 </Tooltip>

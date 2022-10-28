@@ -55,7 +55,7 @@ const Header = () => {
                     {/* {!isMd && <Search />} */}
                 </div>
                 <div className="center" onClick={() => route('/')}>
-                    <h3 className={isMd ? 'titleSm' : "urbanist title"}>movieLog.</h3>
+                    <h3 className={isMd ? 'urbanist titleSm' : "urbanist title"}>movieLog.</h3>
                 </div>
                 <div className="right">
                     <button onClick={() => route('/')}>Home</button>

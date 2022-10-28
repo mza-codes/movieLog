@@ -1,0 +1,52 @@
+.CustomInput {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    input {
+        border: 2px solid blueviolet;
+        border-radius: 8px;
+        padding: 8px;
+        text-align: center;
+    }
+
+    input[type="password"] {
+        font-family: Georgia, 'Times New Roman', Times, serif;
+        font-weight: bolder;
+        letter-spacing: 2px;
+    }
+
+    .error {
+        border: 2px solid red;
+        background-color: transparent;
+        color: rgb(255, 47, 47);
+    }
+
+    .success {
+        border: 2px solid rgb(0, 226, 0) !important;
+        background-color: transparent !important;
+        color: greenyellow;
+    }
+    
+    .normal {
+        border: 2px solid blueviolet;
+    }
+
+    .errorText {
+        position: absolute;
+        color: red;
+        font-weight: 500;
+        font-size: small;
+        bottom: -10px;
+        left: 10px;
+    }
+
+    input:focus {
+        outline: none;
+    }
+    input:hover {
+        outline: none;
+        background: white !important;
+        color: black !important;
+    }
+}
