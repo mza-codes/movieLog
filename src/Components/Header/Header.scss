@@ -84,7 +84,7 @@
         color: #000;
         font-weight: 500;
         transition: scale 500ms;
-            transition: transform 500ms;
+        transition: transform 500ms;
     }
 
     button:hover {
@@ -100,7 +100,7 @@
     }
 }
 
-.notifications{
+.notifications {
     display: flex;
     flex-direction: column;
 }

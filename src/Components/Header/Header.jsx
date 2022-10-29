@@ -9,7 +9,6 @@ import useResponsive from '../../Hooks/useResponsive'
 import Search from '../Search/Search'
 import './Header.scss'
 
-const HeaderMain = 'love'
 const Header = () => {
     const route = useNavigate();
     const isMd = useResponsive('down', 'md');

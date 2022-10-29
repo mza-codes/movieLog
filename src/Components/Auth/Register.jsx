@@ -7,12 +7,13 @@ import './auth.scss'
 import { Form, Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import CustomInputNative from '../../Hooks/CustomInputNative';
-import { GoogleAuthProvider, isSignInWithEmailLink, sendSignInLinkToEmail, signInWithEmailAndPassword, signInWithEmailLink, signInWithPopup } from 'firebase/auth';
-import { auth, db } from '../../firebaseConfig/firebase';
-import { Button, IconButton } from '@mui/material';
+import {
+    GoogleAuthProvider, sendSignInLinkToEmail, signInWithPopup
+} from 'firebase/auth';
+import { auth } from '../../firebaseConfig/firebase';
+import { IconButton } from '@mui/material';
 import Iconify from '../../Hooks/Iconify';
 import { AuthContex } from '../../Contexts/AuthContext';
-import { collection, doc, getDoc, query, serverTimestamp, setDoc, Timestamp } from 'firebase/firestore';
 
 export const Register = () => {
     const [list, setList] = useState([]);
@@ -21,16 +22,7 @@ export const Register = () => {
     const [verifyEmail, setVerifyEmail] = useState('')
     let v = Math.floor(Math.random() * list.length);
     let data = sessionStorage.getItem('top');
-    const { setUser, setUserProp } = useContext(AuthContex);
-
-    const fetchBg = () => {
-        if (!data) {
-            // case
-        } else {
-            let value = JSON.parse(data)
-            setList(value)
-        }
-    }
+    const { setUser } = useContext(AuthContex);
 
     useEffect(() => {
         const observer = lozad()
@@ -38,7 +30,12 @@ export const Register = () => {
     })
 
     useEffect(() => {
-        fetchBg()
+        if (!data) {
+            // case
+        } else {
+            let value = JSON.parse(data);
+            setList(value);
+        }
     }, []);
 
     const disableAccess = () => {
@@ -49,26 +46,21 @@ export const Register = () => {
     const handleSignup = (values, actions) => {
         console.log(values);
         setErrors(null)
-        const { email, password } = values
+        const { email } = values
         // sign up code 
         const actionCodeSettings = {
-            url: 'http://localhost:3000/register',
+            url: 'http://localhost:3000/emailLinkLogin',
             handleCodeInApp: true,
         };
         sendSignInLinkToEmail(auth, email, actionCodeSettings)
             .then(() => {
-                // The link was successfully sent. Inform the user.
-                // Save the email locally so you don't need to ask the user for it again
-                // if they open the link on the same device.
                 setVerifyEmail(email);
                 disableAccess()
                 window.localStorage.setItem('emailForSignIn', email);
-                // ...
             })
             .catch((error) => {
                 console.log('ERR OCCured => ', error);
-                setErrors(error)
-                // ...
+                setErrors(error);
             });
     }
 
@@ -77,83 +69,18 @@ export const Register = () => {
         const provider = new GoogleAuthProvider();
 
         signInWithPopup(auth, provider).then((result) => {
-            const credential = GoogleAuthProvider.credentialFromResult(result);
-            const token = credential.accessToken;
+            // const credential = GoogleAuthProvider.credentialFromResult(result);
+            // const token = credential.accessToken;
             const newUser = result.user;
             setUser(newUser);
             route('/');
-            // const q = query(collection(db, 'webusers'), where('id', '==', newUser.uid))
-            // getDocs(q).then((result) => {
-            //     if (result.docs.length === 0) {
-            //         console.log('No User Document found');
-            //         storeUser(newUser)
-            //     } else {
-            //         console.log('COMPLETE');
-            //         route('/')
-            //     }
-            // })
         }).catch(err => console.log(err));
     }
-
-    const emailLinkLogin = async () => {
-        if (isSignInWithEmailLink(auth, window.location.href)) {
-            // Additional state parameters can also be passed via URL.
-            // This can be used to continue the user's intended action before triggering
-            // the sign-in operation.
-            // Get the email if available. This should be available if the user completes
-            // the flow on the same device where they started it.
-            let email = window.localStorage.getItem('emailForSignIn');
-            if (!email) {
-                // User opened the link on a different device. To prevent session fixation
-                // attacks, ask the user to provide the associated email again. For example:
-                email = window.prompt('Please provide your email for confirmation');
-            }
-            // The client SDK will parse the code from the link for you.
-            signInWithEmailLink(auth, email, window.location.href)
-                .then(async(result) => {
-                    // Clear email from storage.
-                    window.localStorage.removeItem('emailForSignIn');
-                    // You can access the new user via result.user
-                    console.log(result);
-                    console.log('FETCHED USER', result.user);
-                    setUser(result.user);
-                    const snap = await getDoc(doc(db, 'webusers', result.user.uid))
-                    if (snap.exists()) {
-                        console.log('DATA EXISTS');
-                        route('/');
-                    } else {
-                        setDoc(doc(db, "webusers", result.user.uid), {
-                            userName: "",
-                            email: result?.user?.email,
-                            emailVerified: result?.user?.emailVerified,
-                            joinDate: result?.user?.metadata?.creationTime,
-                            joinedTime: result?.user?.metadata?.createdAt,
-                        });
-                        console.log('ADDED DATA');
-                        route('/');
-                    }
-                    // Additional user info profile not available via:
-                    // result.additionalUserInfo.profile == null
-                    // You can check if the user is new or existing:
-                    // result.additionalUserInfo.isNewUser
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setErrors(error);
-                    // Some error occurred, you can inspect the code: error.code
-                    // Common errors could be invalid email and invalid or expired OTPs.
-                });
-        }
-    }
-
-    useEffect(() => {
-        emailLinkLogin()
-    }, [])
 
     const SignupSchema = Yup.object().shape({
         email: Yup.string().email('Invalid Email').required('Required Field !').max(30, 'Email too Long !').min(5, 'Email too Short!'),
         // password: Yup.string().required('Required Field !').max(30, 'Password too Long !').min(5, 'Password too Short!')
-    })
+    });
 
     return (<>
         <Header />
@@ -179,11 +106,11 @@ export const Register = () => {
                                     {errors?.message && <span className="errorText">{errors?.message}</span>}
                                     <IconButton onClick={signInWithGmail} className='gSignBtn'> <Iconify width={28} height={28}
                                         icon='logos:google-icon' /> </IconButton>
-
                                 </Form>
                             )}
                         </Formik>
                     </div>
+
                     {verifyEmail && <h5 style={{ marginTop: '1rem' }} className="mailSent">
                         Verification Link Successfully sent to "{verifyEmail}" <br />
                         Please Verify Your Email !</h5>}

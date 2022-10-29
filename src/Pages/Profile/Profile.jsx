@@ -1,9 +1,8 @@
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { updateProfile } from 'firebase/auth';
 import { Form, Formik } from 'formik';
 import { useContext, useEffect, useState } from 'react';
 import Header from '../../Components/Header/Header';
 import { AuthContex } from '../../Contexts/AuthContext';
-import { auth } from '../../firebaseConfig/firebase';
 import CustomInputNative from '../../Hooks/CustomInputNative';
 import Iconify from '../../Hooks/Iconify';
 import * as Yup from 'yup'
@@ -17,8 +16,7 @@ const Profile = () => {
         console.log(values);
         const { name } = values;
         setUserName(name);
-        const element = document.getElementById('updateBtn')
-        console.log(element);
+        const element = document.getElementById('updateBtn');
         element.classList.add('hide');
         await updateProfile(user, { displayName: name });
     };

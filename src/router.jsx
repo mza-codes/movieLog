@@ -8,6 +8,7 @@ import { useContext } from "react";
 import { AuthContex } from "./Contexts/AuthContext";
 import ErrorLogo from "./Constants/Error/ErrorLogo";
 import Profile from "./Pages/Profile/Profile";
+import EmailLinkLogin from "./Pages/EmailLinkLogin/EmailLinkLogin";
 
 export default function Router() {
     const { user } = useContext(AuthContex);
@@ -51,6 +52,8 @@ export default function Router() {
         { path: 'login', element: <Protected user={user}> <Login /> </Protected> },
         { path: 'register', element: <Protected user={user}> <Register /> </Protected> },
         { path: 'profile', element: <UserRoute user={user}> <Profile /> </UserRoute> },
+        { path: 'emailLinkLogin', element: <Protected user={user}> <EmailLinkLogin /> </Protected> },
+        // emailLinkLogin
 
         // {
         //     path: '/',
