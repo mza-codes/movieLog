@@ -101,6 +101,7 @@ const Header = () => {
                         </Popover>
                     </div> : <>
                         <button onClick={() => route('/')}>Home</button>
+                        <button onClick={() => route('/emailLinkLogin')}>Test</button>
                         {user ? <> <button onClick={e => signOut(auth)}>Logout</button>
                             <button onClick={e => route('/profile')}>Profile</button>
                         </> : <> <button onClick={() => route('/login')}>Login</button>

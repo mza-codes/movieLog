@@ -10,10 +10,11 @@ import CustomInputNative from '../../Hooks/CustomInputNative';
 import {
     GoogleAuthProvider, sendSignInLinkToEmail, signInWithPopup
 } from 'firebase/auth';
-import { auth } from '../../firebaseConfig/firebase';
+import { auth, db } from '../../firebaseConfig/firebase';
 import { IconButton } from '@mui/material';
 import Iconify from '../../Hooks/Iconify';
 import { AuthContex } from '../../Contexts/AuthContext';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 export const Register = () => {
     const [list, setList] = useState([]);
@@ -68,11 +69,29 @@ export const Register = () => {
         console.log('SIGN IN WITH GMAIL');
         const provider = new GoogleAuthProvider();
 
-        signInWithPopup(auth, provider).then((result) => {
+        signInWithPopup(auth, provider).then(async (result) => {
             // const credential = GoogleAuthProvider.credentialFromResult(result);
             // const token = credential.accessToken;
+
             const newUser = result.user;
             setUser(newUser);
+            const snap = await getDoc(doc(db, 'webusers', newUser.uid));
+            console.log(snap);
+            if (snap.exists()) {
+                console.log('DATA EXISTS');
+                route('/');
+            } else {
+                await setDoc(doc(db, "webusers", newUser.uid), {
+                    userName: "",
+                    email: result?.user?.email,
+                    emailVerified: result?.user?.emailVerified,
+                    joinDate: result?.user?.metadata?.creationTime,
+                    joinedTime: result?.user?.metadata?.createdAt,
+                    ownerId: result?.user?.uid
+                });
+                console.log('ADDED DATA');
+                route('/');
+            }
             route('/');
         }).catch(err => console.log(err));
     }

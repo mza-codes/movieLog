@@ -13,7 +13,6 @@ import EmailLinkLogin from "./Pages/EmailLinkLogin/EmailLinkLogin";
 export default function Router() {
     const { user } = useContext(AuthContex);
     const Protected = ({ user, children }) => {
-        console.log('PROTECTED ROUTE =>', user);
         if (!user) {
             return children;
         } else {
@@ -22,7 +21,6 @@ export default function Router() {
     };
 
     const UserRoute = ({ user, children }) => {
-        console.log('USerRoute ROUTE =>', user);
         if (!user) {
             return <Navigate to="/" replace />;
         } else {

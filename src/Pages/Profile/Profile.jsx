@@ -7,6 +7,8 @@ import CustomInputNative from '../../Hooks/CustomInputNative';
 import Iconify from '../../Hooks/Iconify';
 import * as Yup from 'yup'
 import './Profile.scss';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../firebaseConfig/firebase';
 
 const Profile = () => {
     const { user, setUser } = useContext(AuthContex);
@@ -18,7 +20,22 @@ const Profile = () => {
         setUserName(name);
         const element = document.getElementById('updateBtn');
         element.classList.add('hide');
-        await updateProfile(user, { displayName: name });
+        await updateProfile(user, { displayName: name }).then(() => {
+            updateDoc(doc(db, 'webusers', user.uid), {
+                userName: name,
+                upDated: new Date().toLocaleString(),
+                watchData: []
+            }).then((res) => {
+                console.log(res);
+                console.log('COMPLETE UPDATE');
+            }).catch(err => {
+                setErrors(err);
+                console.log('UpdateDoc ERR', err);
+            });
+        }).catch(err => {
+            setErrors(err);
+            console.log('updateProfile ERR', err);
+        });
     };
 
     const schema = Yup.object().shape({
