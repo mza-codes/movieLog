@@ -1,0 +1,133 @@
+.addItemBg {
+    background-size: cover;
+    background-position: center;
+    // height: 93vh;
+    position: relative;
+    color: white;
+    /* box-shadow: inset 0 0 0 0 rgba(5, 5, 5, 0.3); */
+    box-shadow: inset 0 0 0 100vh rgba(0, 0, 0, 0.664);
+    object-fit: cover;
+    min-height: 93vh;
+    max-width: 100vw;
+    width: 100%;
+}
+
+.addData {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    button {
+        margin-top: 5px;
+        // font-family: 'Public Sans';
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: bolder;
+        border: none;
+        outline: none;
+        max-width: 100px;
+        background-color: rgba($color: #000000, $alpha: 0.4);
+        color: white;
+        // border: 3px solid rgb(255, 255, 255);
+    }
+
+    button:hover {
+        background-color: rgba($color: #ffffff, $alpha: 0.6);
+        color: rgb(0, 0, 0);
+    }
+
+    button:disabled {
+        background-color: darkgrey;
+        color: #000000;
+    }
+
+    .loading {
+        content: "";
+        border-radius: 20px;
+        width: 100%;
+        max-width: 400px;
+        height: 15px;
+        background: transparent;
+    }
+
+    .loader {
+        content: "";
+        animation: load 10s linear alternate infinite;
+        height: 11px;
+        border-radius: 20px;
+        background: linear-gradient(to right, transparent, #00ff6a);
+    }
+
+}
+
+.err {
+    color: #ff8800;
+    transition: transform 900ms;
+    cursor: pointer;
+    
+    &:hover {
+        color: rgb(255, 55, 55);
+    }
+
+}
+
+@keyframes load {
+    0% {
+        width: 0%;
+    }
+
+    25% {
+        width: 25%;
+        background: linear-gradient(to right, transparent, #ff8800);
+    }
+
+    50% {
+        width: 50%;
+        background: linear-gradient(to right, transparent, #00aeff);
+    }
+
+    75% {
+        width: 75%;
+        background: linear-gradient(to right, transparent, #eeff00);
+    }
+
+    100% {
+        width: 100%;
+        background: linear-gradient(to right, transparent, #00ff6a);
+    }
+
+}
+
+.imgPreview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+
+    img {
+        object-fit: cover;
+        max-width: 40vw;
+        max-height: 80vh;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .imgPreview {
+        img {
+            margin-top: 20px;
+            max-width: 90vw;
+        }
+    }
+}

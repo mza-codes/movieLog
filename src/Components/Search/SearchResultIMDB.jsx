@@ -90,7 +90,7 @@ function SearchResultIMDB() {
 
     const downloadPoster = (url, name) => {
         if (window.confirm('This Image Will be Downloaded ! Confirm ?')) {
-            if (url.includes('https://', '.jpg', '.png', 'http://')) {
+            if (url?.includes('https://', '.jpg', '.png', 'http://')) {
                 console.log('includes link');
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", url, true);

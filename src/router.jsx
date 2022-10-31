@@ -9,6 +9,7 @@ import { AuthContex } from "./Contexts/AuthContext";
 import ErrorLogo from "./Constants/Error/ErrorLogo";
 import Profile from "./Pages/Profile/Profile";
 import EmailLinkLogin from "./Pages/EmailLinkLogin/EmailLinkLogin";
+import AddItem from "./Pages/AddItem/AddItem";
 
 export default function Router() {
     const { user } = useContext(AuthContex);
@@ -49,6 +50,7 @@ export default function Router() {
         { path: 'searchv2/:query', element: <SearchResultIMDB /> },
         { path: 'login', element: <Protected user={user}> <Login /> </Protected> },
         { path: 'register', element: <Protected user={user}> <Register /> </Protected> },
+        { path: 'addItem', element: <UserRoute user={user}> <AddItem /> </UserRoute> },
         { path: 'profile', element: <UserRoute user={user}> <Profile /> </UserRoute> },
         { path: 'emailLinkLogin', element: <Protected user={user}> <EmailLinkLogin /> </Protected> },
         // emailLinkLogin

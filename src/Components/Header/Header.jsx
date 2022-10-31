@@ -1,9 +1,10 @@
 import { IconButton, Popover } from '@mui/material'
-import { signOut } from 'firebase/auth'
+import { getIdToken, signOut } from 'firebase/auth'
+import { doc, setDoc, updateDoc } from 'firebase/firestore'
 import { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AuthContex } from '../../Contexts/AuthContext'
-import { auth } from '../../firebaseConfig/firebase'
+import { auth, db } from '../../firebaseConfig/firebase'
 import Iconify from '../../Hooks/Iconify'
 import useResponsive from '../../Hooks/useResponsive'
 import Search from '../Search/Search'
@@ -13,7 +14,7 @@ const Header = () => {
     const route = useNavigate();
     const isMd = useResponsive('down', 'md');
     const [anchorEl, setAnchorEl] = useState(null);
-    const { user } = useContext(AuthContex)
+    const { user } = useContext(AuthContex);
     const [menuPop, setMenuPop] = useState(null);
     const [notifyPopUp, setNotifyPopUp] = useState(null);
 
@@ -101,7 +102,7 @@ const Header = () => {
                         </Popover>
                     </div> : <>
                         <button onClick={() => route('/')}>Home</button>
-                        <button onClick={() => route('/emailLinkLogin')}>Test</button>
+                        <button onClick={() => route('/addItem')}>Add Item</button>
                         {user ? <> <button onClick={e => signOut(auth)}>Logout</button>
                             <button onClick={e => route('/profile')}>Profile</button>
                         </> : <> <button onClick={() => route('/login')}>Login</button>
