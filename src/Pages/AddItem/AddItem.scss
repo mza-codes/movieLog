@@ -54,8 +54,11 @@
         border-radius: 20px;
         width: 100%;
         max-width: 400px;
-        height: 15px;
         background: transparent;
+
+        .text{
+            margin: 8px;
+        }
     }
 
     .loader {
@@ -72,7 +75,7 @@
     color: #ff8800;
     transition: transform 900ms;
     cursor: pointer;
-    
+
     &:hover {
         color: rgb(255, 55, 55);
     }
@@ -116,10 +119,12 @@
 
     img {
         object-fit: cover;
-        max-width: 40vw;
-        max-height: 80vh;
+        max-width: 200px;
+        max-height: 300px;
         width: 100%;
         height: 100%;
+        margin-top: 20px;
+        border-radius: 10px;
     }
 }
 
@@ -129,5 +134,102 @@
             margin-top: 20px;
             max-width: 90vw;
         }
+    }
+
+    .suggestionsContainer {
+        margin-top: 20px;
+    }
+}
+
+.suggestionsContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    overflow-y: scroll;
+    max-height: 60vh;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    .suggestionItem {
+        transition: transform 600ms;
+        border-radius: 2px 20px 5px 20px;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        width: 150px;
+        height: 110px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        box-shadow: inset 0 0 0 90px rgba(0, 0, 0, 0.664);
+
+        &:hover {
+            transform: scale(1.1);
+            color: #000000;
+            cursor: pointer;
+            box-shadow: inset 0 0 0 90px rgba(255, 255, 255, 0.664);
+        }
+
+        .icon {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+        }
+    }
+
+}
+
+.verifyLink {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: red;
+    max-width: 550px;
+    font-weight: 500;
+
+    .imgVerifyLink {
+        font-weight: 600;
+        color: #00ff6a;
+        text-decoration: none;
+        max-width: 500px;
+
+        &:hover {
+            color: #eeff00;
+        }
+    }
+}
+
+.select {
+
+    select {
+        font-weight: 500;
+        outline: none;
+        appearance: none;
+        background-color: rgba($color: #ffffff, $alpha: 0.6);
+        width: 100%;
+        min-width: 300px;
+        max-width: 30ch;
+        border-bottom: 4px solid rgb(0, 231, 154);
+        border-radius: 6px 6px 0 0;
+        padding: 10px;
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 16px;
+
+        &::-ms-expand {
+            display: none;
+        }
+    }
+
+    option {
+        font-weight: 500;
+        padding: 16px;
+        gap: 10px;
     }
 }

@@ -6,6 +6,10 @@ export const trending2 = `${TMDB_URL}/trending/all/day?api_key=${API_KEY}&langua
 export const action2 = `${TMDB_URL}/discover/movie?api_key=${API_KEY}&with_genres=28`
 export const originals = `${TMDB_URL}/discover/tv?api_key=${API_KEY}&with_networks=213`
 
+export const latest = `${TMDB_URL}/discover/movie?primary_release_date.gte=2014-09-15&primary_release_date.lte=2014-10-22`
+
+const searchWithYear = `${TMDB_URL}/search/movie?api_key=${API_KEY}&query=shadow&year=2015`
+
 export const query = {
     method: 'GET',
     url: 'https://online-movie-database.p.rapidapi.com/auto-complete',

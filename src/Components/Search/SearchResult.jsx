@@ -126,7 +126,7 @@ function SearchResult() {
                     <div className="resv2">
                         {list?.map((data, i) => (
                             <div key={data.id} className='resItem'>
-                                <img key={data.id} alt={data.title} className='resultPoster lozad'
+                                <img key={data.id} alt={data.title} className='resultPoster lozad' onClick={() => setMovie(data)}
                                     src={data ? w500 + data?.poster_path || w500 + data?.backdrop_path : ''}
                                 //  onClick={() => fechTitle(data.id)}
                                 />

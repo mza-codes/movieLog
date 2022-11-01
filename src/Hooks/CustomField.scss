@@ -42,6 +42,10 @@
         border-bottom: 3px solid rgb(0, 231, 154);
     }
 
+    .warn {
+        border-bottom: 5px solid red !important;
+    }
+
     .errMsg {
         color: red;
         background-color: rgba($color: #460000, $alpha: 0.2);
