@@ -1,5 +1,7 @@
+import { uuidv4 } from '@firebase/util';
 import { MenuItem, Select } from '@mui/material';
 import axios from 'axios';
+import { arrayUnion, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { Form, Formik } from 'formik';
 import lozad from 'lozad';
 import { useEffect, useState } from 'react';
@@ -8,6 +10,7 @@ import * as Yup from 'yup';
 import Header from '../../Components/Header/Header';
 import { API_KEY, IMDB_API, TMDB_URL } from '../../Constants/Constants';
 import { AuthContex } from '../../Contexts/AuthContext';
+import { db } from '../../firebaseConfig/firebase';
 import CustomField from '../../Hooks/CustomField';
 import Iconify from '../../Hooks/Iconify';
 import './AddItem.scss';
@@ -16,25 +19,31 @@ const AddItem = () => {
 
     const { user } = useContext(AuthContex);
     const [loading, setLoading] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
     const [showWarn, setWarn] = useState({
         img: false,
         title: false
     });
+    const [previousSubmit, setPreviousSubmit] = useState({
+        query: "",
+        image: "",
+        queryStatus: false,
+        imageStatus: false,
+    });
+    const [data, setData] = useState({});
     const [img, setImg] = useState('');
     const [err, setErrors] = useState({ message: "", messageTitle: "" });
     const [imgErr, setImgErr] = useState("");
     const [valid, setValid] = useState(false);
     const maxYear = new Date().getFullYear();
     const maxDate = new Date().toLocaleString();
+    console.log('Payload to Upload', data);
 
     // Validations
     const regExURL = /^((https?|ftp):\/\/)?(www.)?(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i
 
-    const FILE_SIZE = 6001200;
-    const SUPPORTED_FORMATS = ["image/jpg", "image/jpeg", "image/bmp", "image/png", "image/webp", "image/svg"];
-    const SUPPORTED_IMAGES = ["jpg", "jpeg", "bmp", "png", "webp", "svg"];
-
+    // Yup Validation is ValidURL
     const isValidUrl = (url) => {
         let stat = regExURL.test(url);
         if (!stat) return false;
@@ -46,7 +55,9 @@ const AddItem = () => {
         return true;
     };
 
+    // Movie title validation -- exact match
     const isValidIMDBMovie = async (query, year) => {
+        if (previousSubmit.query === query) return previousSubmit.queryStatus;
         try {
             let imdbRes = await axios.get(`https://imdb-api.com/en/API/SearchMovie/${IMDB_API}/${query}%20${year}`);
             console.log('Fetched Response ::=>', imdbRes);
@@ -63,7 +74,7 @@ const AddItem = () => {
             if (status?.length <= 0) {
                 //  do additional page searching here if required ! 
                 setSuggestions(result);
-                setErrors({ messageTitle: "The movie title is found invalid, Have a look at our suggestions !" });
+                setErrors({ messageTitle: "The movie title does not match with Database, Have a look at our suggestions !" });
                 return false;
             } else {
                 setSuggestions(result?.slice(0, 5));
@@ -76,8 +87,8 @@ const AddItem = () => {
             return false;
         }
     }
-
-    const isValidMovie = async (query, year) => { // TMDB Query
+    // TMDB Query if result is 0 on previous
+    const isValidMovie = async (query, year) => {
         try {
             const res = await axios.get(`${TMDB_URL}/search/movie?api_key=${API_KEY}&query=${query}&year=${year}`);
             const result = res.data.results;
@@ -93,7 +104,7 @@ const AddItem = () => {
             if (status.length <= 0) {
                 //  do additional page searching here if required ! 
                 setSuggestions(result);
-                setErrors({ messageTitle: "The movie title is found invalid, Have a look at our suggestions !" });
+                setErrors({ messageTitle: "The movie title does not match with Database, Have a look at our suggestions !" });
                 return false;
             } else {
                 setSuggestions(result?.slice(0, 5));
@@ -105,34 +116,9 @@ const AddItem = () => {
             setErrors({ messageTitle: "Server Error" });
             return false;
         }
-    }
-
-    const isValidImage = async (url) => {
-        console.log('called isValidIMAGE');
-        try {
-            // Try 1 //
-            const blob = await fetch(url).then(res => res.blob());
-            console.log('FETCHED', blob);
-            if (!blob) {
-                setImgErr("Error Fetching Image from URL,Please Verify URL !");
-                return false;
-            }
-            let imgValid = SUPPORTED_FORMATS.includes(blob?.type);
-            console.log('SUPPORTED FORMATS VALIDATION', imgValid);
-            if (!imgValid) {
-                setImgErr('The image does not match with regular image extensions! Please verify once more or change url !');
-            }
-            return imgValid;
-            // Try 1 Close //
-        } catch (e) {
-            console.log('ERR OCCURED', e);
-            setImgErr('Server Error, Please Verify URL');
-            return false;
-        }
     };
 
-    // .test('is-url-valid', 'URL is not valid', (value) => isValidUrl(value))
-    // .matches(regURL,'Invalid REGURL')
+    // Yup Validation Schema
     const itemSchema = Yup.object().shape({
         name: Yup.string().required('Required Field').min(3).max(70),
         year: Yup.number().required('Required Field').min(1888, 'Invalid Year').max(maxYear, 'You must be kidding !'),
@@ -141,54 +127,63 @@ const AddItem = () => {
         watchDate: Yup.date().required('Required Field').max(maxDate, 'Date.now() is Max')
     });
 
-    const handleSubmit = async (values, actions) => {
-        setLoading(true);
-        // Image URL Validation //
-        const imgValid = await isValidImage(values.url);
-        if (!imgValid) {
-            // setting warning in inputBox
-            setWarn((current) => ({
-                ...current,
-                img: true
-            }));
-            const { url } = values;
-            let array = url.split('/');
-            let value = array.length - 1;
-            const ext = array[value].split('.');
-            let stat = SUPPORTED_IMAGES.includes(ext[1]);
+    // Image Validation more Reliable 
+    const validateImage = url => {
+        if (previousSubmit.image === url) { setImg(url); return previousSubmit.imageStatus; }
+        return new Promise((resolve, reject) => {
+            const validImg = new Image()
+            // the following handler will fire after a successful loading of the image
+            validImg.onload = () => {
+                const { naturalWidth: width, naturalHeight: height } = validImg;
 
-            if (stat === true) {
-                setImgErr("");
+                if (height < 300 && width < 300) {
+                    console.log('INSIDE IF');
+                    setImgErr(`The Image Dimensions must be a minimum of 300 ! Current Image Size: ${width}x${height}`);
+                    setValid(false);
+                    setWarn((current) => ({
+                        ...current,
+                        img: true
+                    }));
+                    resolve(false);
+                } else {
+                    // Image OK
+                    setImg(url);
+                    setWarn((current) => ({
+                        ...current,
+                        img: false
+                    }));
+                    resolve(true);
+                }
+            }
+            // respond with error if invalid image
+            validImg.onerror = () => {
+                console.log('FAILED cc');
+                setImgErr("Error Fetching Image from provided url, Please Verify Source!");
+                setValid(false);
                 setWarn((current) => ({
                     ...current,
-                    img: false
+                    img: true
                 }));
-                setImg(url);
-                const element = document.getElementById("link");
-                element.style.display = 'block';
-                element.innerText = "Unable to fetch an image from the provided URL, If you can see a preview of your image, Ignore this message, else please Verify your image by clicking this link, However, feel free to Change your image later if there's an error. ";
-                element.href = url;
-                console.log(element.parentNode, "<parentNode || parentElement>", element.parentElement);
-                // const parent = element.parentNode;
-                // const link = document.createElement('a');
-                // link.href = url;
-                // link.appendChild(element.cloneNode(true));
-                // parent.replaceChild(link, element);
-                setValid(true);
-            } else {
-                setImgErr('The url you have provided seems to fetch no images,Please verify once more or change url !');
+                resolve(false);
             }
-        } else if (imgValid) {
-            setImgErr('');
-            setWarn((current) => ({
-                ...current,
-                img: false
-            }));
-            setImg(values.url);
-            setValid(true);
-        }
-        // Image Validation Complete //
-        // Validate Movie Name //
+            // loads image
+            validImg.src = url;
+        })
+    }
+
+    const handleSubmit = async (values, actions) => {
+        console.log('handleSubmit CALLED');
+        setLoading(true);
+        setImgErr("");
+        setErrors({ messageTitle: "" });
+        setImg(null);
+        setPreviousSubmit((current) => ({
+            ...current,
+            query: values.name,
+            image: values.url,
+        }));
+
+        // Validate Movie title  //
         const validMovie = await isValidIMDBMovie(values.name, values.year);
         console.log('VALIDMOVIE ===', validMovie);
         if (!validMovie) {
@@ -202,26 +197,82 @@ const AddItem = () => {
                 ...current,
                 title: false
             }));
-        }
-        // const validMovie = await isValidMovie(values.name, values.year);
-        // const { name, year, url, watchDate } = values;
-        const [watchedDate, watchedTime] = values.watchDate.split('T');
-        console.log('Date Splitted', watchedDate, watchedTime);
-        console.log('handleSubmit CALLED');
-        console.log(values);
+        };
 
+        const isValidImg = await validateImage(values.url);
+        setPreviousSubmit((current) => ({
+            ...current,
+            queryStatus: validMovie,
+            imageStatus: isValidImg
+        }));
+        console.log('isValidIMG ? >>', isValidImg);
+        // Set Data to Payload
+        const { name, year, url, watchDate } = values;
+        const [watchedDate, watchedTime] = values.watchDate.split('T');
+        const id = values.watchDate;
+        let createdAt = new Date().toLocaleString();
+        setData({
+            id, name, year, url, watchedDate, watchedTime, watchCount: 1, createdAt
+        });
+
+        if (isValidImg && validMovie) {
+            console.log(values);
+            console.log('ALL SET');
+            setLoading(false);
+            setShowConfirm(true);
+            return;
+        };
         setLoading(false);
-    }
+    };
+
+    const handleConfirm = async () => {
+        setLoading(true);
+        console.log(data);
+        try {
+            await updateDoc(doc(db, 'webusers', user.uid), {
+                watchData: arrayUnion(data)
+            }).then((resp) => {
+                console.log('addedData', resp);
+                setLoading(false);
+                setImgErr("Completed Upload");
+                setShowConfirm(false);
+                return;
+            }).catch(e => console.log('PromiseErr', e));
+
+        } catch (e) {
+            console.log("Error Occured While Data Submission", e);
+        }
+    };
+
+    const handleFill = (movie) => {
+        console.log('fill called');
+        let oldValues = { name: data.name, image: data.url };
+        let newValues = {
+            name: showWarn.title ? movie?.title : data.name,
+            image: showWarn.img ? movie?.url : data.url
+        };
+        setData((current) => ({
+            ...current,
+            name: showWarn.title ? movie?.title : current.name,
+            url: showWarn.img ? movie?.url : current.url
+        }));
+        setWarn((current) => ({
+            ...current,
+            title: oldValues.name === newValues.name ? current.title : false,
+            img: oldValues.image === newValues.image ? current.img : false
+        }));
+        setShowConfirm(true);
+    };
 
     useEffect(() => {
         const observer = lozad();
         observer.observe();
-    })
+    });
 
     return (
         <>
             <Header />
-            <div className="container-fluid addItemBg" style={{ background: `url("https://picsum.photos/1920/1080")` }}>
+            <div className="container-fluid addItemBg lozad" style={{ background: `url("https://picsum.photos/1920/1080")` }}>
                 <div className="row pt-5">
                     <div className="col-12 col-md-6">
                         <div className="addData">
@@ -237,27 +288,25 @@ const AddItem = () => {
 
                                         {loading && <div className="loading"> <p className="text">
                                             Verifying Data... </p>
-                                            <div className="loader"></div> </div>}
+                                            <div className="loader"></div>
+                                        </div>}
                                         <span className="err">{err?.messageTitle}</span>
-                                        <div className="verifyLink">
-                                            <a id="link" className='imgVerifyLink' style={{ display: 'none' }}
-                                                target="_blank" rel='noreferrer' ></a>
-                                        </div>
                                         <span className="err">{imgErr}</span>
-                                        {/* {imgErr !=== "" && <span className='err'>If you see an image preview of
-                                            uploaded url, ignore this message ! <br /> However feel free to update the image later, if
-                                            there's an error ! </span>} */}
                                         {!loading && <button type='submit'>Submit</button>}
                                     </Form>
                                 )}
                             </Formik>
                         </div>
+                        {showConfirm && <div className="confirm center p-2">
+                            <button onClick={handleConfirm} className="confimBtn p-2">
+                                Confirm <Iconify icon='charm:shield-tick' /> </button>
+                        </div>}
                     </div>
                     <div className="col-12 col-md-6">
                         {suggestions?.length !== 0 && <h4 style={{ marginBottom: '15px', textAlign: 'center' }}>Suggestions</h4>}
                         <div className="suggestionsContainer">
                             {suggestions?.map((movie) => (
-                                <div key={movie?.id} className="suggestionItem lozad" onClick={e => console.log('clicked')}
+                                <div key={movie?.id} className="suggestionItem lozad" onClick={e => handleFill(movie)}
                                     style={{ background: `url(${movie?.image || ""})` }} >
                                     <span><b>{movie?.title?.slice(0, 20)}</b></span>
                                     <span>{movie?.resultType}&nbsp;{movie?.description?.slice(0, 6)}</span>
@@ -271,7 +320,8 @@ const AddItem = () => {
                     </div>
                     <div className="col-12 col-md-6">
                         <div className="imgPreview">
-                            {img && <img src={img} alt="_preview" />}
+                            <div id="validImg"></div>
+                            {img && <img className='lozad' src={img} alt="_preview" />}
                         </div>
                     </div>
                 </div>

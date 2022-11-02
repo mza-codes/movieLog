@@ -54,7 +54,8 @@ const EmailLinkLogin = () => {
                             emailVerified: result?.user?.emailVerified,
                             joinDate: result?.user?.metadata?.creationTime,
                             joinedTime: result?.user?.metadata?.createdAt,
-                            ownerId: result?.user?.uid
+                            ownerId: result?.user?.uid,
+                            watchData: []
                         });
                         console.log('ADDED DATA');
                         route('/');

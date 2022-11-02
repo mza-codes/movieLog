@@ -56,7 +56,7 @@
         max-width: 400px;
         background: transparent;
 
-        .text{
+        .text {
             margin: 8px;
         }
     }
@@ -231,5 +231,20 @@
         font-weight: 500;
         padding: 16px;
         gap: 10px;
+    }
+}
+
+.confimBtn {
+    border: none;
+    // border-bottom: 2px solid green;
+    outline: none;
+    border-radius: 10px;
+    background-color: rgba($color: #000000, $alpha: 0.5);
+    color: #00ff00;
+    font-weight: 500;
+
+    &:hover {
+        background-color: rgba($color: #000000, $alpha: 1.0);
+        color: #ffffff;
     }
 }

@@ -23,8 +23,7 @@ const Profile = () => {
         await updateProfile(user, { displayName: name }).then(() => {
             updateDoc(doc(db, 'webusers', user.uid), {
                 userName: name,
-                upDated: new Date().toLocaleString(),
-                watchData: []
+                upDatedOn: new Date().toLocaleString(),
             }).then((res) => {
                 console.log(res);
                 console.log('COMPLETE UPDATE');
@@ -53,7 +52,7 @@ const Profile = () => {
                             <p>Name: <b>{user?.displayName || userName}</b></p>
                             <p>Email: <b>{user?.email}</b> <Iconify color={user.emailVerified ? 'lime' : 'red'}
                                 icon={user.emailVerified ? 'material-symbols:verified-user' : 'charm:shield-cross'} /> </p>
-                            <p>Toal Entries: <b>56</b> </p>
+                            <p>Total Entries: <b>56</b> </p>
                             <p>User Since: <b>{user?.metadata?.creationTime?.slice(0, 17)}</b></p>
                         </div>
                     </div>

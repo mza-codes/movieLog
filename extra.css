@@ -1,0 +1,34 @@
+.class element{
+    
+    /* Aligns text vertical */
+    writing-mode: vertical-lr; 
+
+    /* Flips Image  */
+    transform: scale(-1);
+
+    /* scroll at actual size, explore additional features */
+    scroll-snap-type: x mandatory;
+    /* Parent must be  */
+    scroll-snap-align: center;
+
+    /* to resize box/text , (optional)set width 
+    and height to fixde and limit overflow */
+    overflow: auto;
+    resize: both;
+
+    /* prevent overflow text => similar to text.substring() / text.slice() */
+    display: -webkit-box;
+    -webkit-line-clamp: 2 ; /* specify line size */
+    -webkit-box-orient: vertical; /* modify and test */
+    overflow: hidden;
+
+    /* gradient for text (tweak) */
+    font-size: 5rem;
+    background: linear-gradient(to right,blue,red);
+    -webkit-background-clip: text;
+    background-clip:text; /* added by css suggestion */
+    -webkit-text-fill-color: transparent;
+
+    /* removes tesxt cursor */
+    pointer-events: none;
+}
