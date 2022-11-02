@@ -39,23 +39,17 @@ function SearchResult() {
             const res = await axios.get(`${TMDB_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${query || 'shadow'}`);
             console.log('FETCHED QUERY', res);
             setList(res.data.results);
-            if (res.data.results.length <= 0) setNotFound(true); setLoading(false);
+            if (res.data.results.length <= 0) { setNotFound(true); setLoading(false); return false; }
+            setNotFound(false);
             setLoading(false);
+            return true;
         } catch (e) {
             console.log(e);
             document.getElementById('noResult').innerHTML = e?.message || e?.code || "Server Error";
             setNotFound(true);
             setLoading(false);
         }
-    }
-
-    // useEffect(() => {
-    //     const temp = ['orig', 'top']
-    //     let c = Math.floor(Math.random() * temp.length)
-    //     const dat = JSON.parse(sessionStorage.getItem(temp[c]))
-    //     setList(dat)
-
-    // }, []);
+    };
 
     useEffect(() => {
         const observer = lozad();
@@ -69,6 +63,15 @@ function SearchResult() {
     const downloadPoster = (url, name) => {
         console.log(url);
         if (window.confirm('This Image Will be Downloaded ! Confirm ?')) {
+            const image = new Image();
+            image.onload = () => {
+                const { naturalWidth: w, naturalHeight: h } = image;
+                let stat = w === Number && h === Number ? true : false;
+                return stat;
+            }
+            image.onerror = () => { return false; }
+            image.src = url;
+
             if (url?.includes('https://', '.jpg', '.png', 'http://')) {
                 console.log('includes link');
                 var xhr = new XMLHttpRequest();

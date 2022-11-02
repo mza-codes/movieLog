@@ -1,14 +1,13 @@
-import { uuidv4 } from '@firebase/util';
-import { MenuItem, Select } from '@mui/material';
 import axios from 'axios';
-import { arrayUnion, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { Form, Formik } from 'formik';
 import lozad from 'lozad';
 import { useEffect, useState } from 'react';
 import { useContext } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
 import * as Yup from 'yup';
 import Header from '../../Components/Header/Header';
-import { API_KEY, IMDB_API, TMDB_URL } from '../../Constants/Constants';
+import { API_KEY, IMDB_API, TMDB_URL, w500 } from '../../Constants/Constants';
 import { AuthContex } from '../../Contexts/AuthContext';
 import { db } from '../../firebaseConfig/firebase';
 import CustomField from '../../Hooks/CustomField';
@@ -16,8 +15,8 @@ import Iconify from '../../Hooks/Iconify';
 import './AddItem.scss';
 
 const AddItem = () => {
-
     const { user } = useContext(AuthContex);
+    const [watchData, setWatchData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
@@ -28,8 +27,11 @@ const AddItem = () => {
     const [previousSubmit, setPreviousSubmit] = useState({
         query: "",
         image: "",
+        year: "",
         queryStatus: false,
         imageStatus: false,
+        updateTitle: false,
+        updateImage: false
     });
     const [data, setData] = useState({});
     const [img, setImg] = useState('');
@@ -38,7 +40,9 @@ const AddItem = () => {
     const [valid, setValid] = useState(false);
     const maxYear = new Date().getFullYear();
     const maxDate = new Date().toLocaleString();
-    console.log('Payload to Upload', data);
+    const [searchResult, setSearchResult] = useState([]);
+    const [bg, setBg] = useState(null);
+    const status = document.querySelector('.showSuccess');
 
     // Validations
     const regExURL = /^((https?|ftp):\/\/)?(www.)?(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i
@@ -57,11 +61,13 @@ const AddItem = () => {
 
     // Movie title validation -- exact match
     const isValidIMDBMovie = async (query, year) => {
-        if (previousSubmit.query === query) return previousSubmit.queryStatus;
+        if (previousSubmit.query === query && previousSubmit.year === year) return previousSubmit.queryStatus;
         try {
+            // // IMDB SEARCH CALL
             let imdbRes = await axios.get(`https://imdb-api.com/en/API/SearchMovie/${IMDB_API}/${query}%20${year}`);
-            console.log('Fetched Response ::=>', imdbRes);
+            console.log('Fetched RESULT IMDB ::=>', imdbRes);
             const result = imdbRes?.data?.results;
+            // const result = [];
             if (result.length <= 0) {
                 setErrors({ messageTitle: "Invalid title, 0 results found for your title !" });
                 const isValidTMDB = await isValidMovie(query, year);
@@ -77,7 +83,7 @@ const AddItem = () => {
                 setErrors({ messageTitle: "The movie title does not match with Database, Have a look at our suggestions !" });
                 return false;
             } else {
-                setSuggestions(result?.slice(0, 5));
+                setSearchResult(result?.slice(0, 8));
                 return true;
             }
 
@@ -92,6 +98,7 @@ const AddItem = () => {
         try {
             const res = await axios.get(`${TMDB_URL}/search/movie?api_key=${API_KEY}&query=${query}&year=${year}`);
             const result = res.data.results;
+            console.log('FETCHED RESULT TMDB', result);
             if (result.length <= 0) {
                 setErrors({ messageTitle: "The movie title is found invalid, 0 results found from Server !" });
                 return false;
@@ -107,7 +114,7 @@ const AddItem = () => {
                 setErrors({ messageTitle: "The movie title does not match with Database, Have a look at our suggestions !" });
                 return false;
             } else {
-                setSuggestions(result?.slice(0, 5));
+                setSearchResult(result?.slice(0, 8));
                 return true;
             }
 
@@ -173,15 +180,40 @@ const AddItem = () => {
 
     const handleSubmit = async (values, actions) => {
         console.log('handleSubmit CALLED');
+        const { name, year, url, watchDate } = values;
         setLoading(true);
         setImgErr("");
+        status.innerText = "";
         setErrors({ messageTitle: "" });
         setImg(null);
         setPreviousSubmit((current) => ({
             ...current,
             query: values.name,
             image: values.url,
+            year: values.year
         }));
+
+        // Verifying Duplicate in DB
+        if (watchData.length !== 0) {
+            const exist = await watchData.filter((movie) => {
+                return movie?.name?.toLowerCase() === name &&
+                    movie?.year === year || movie?.url === url || movie?.id === watchDate;
+            });
+            if (exist?.length !== 0) {
+                // case
+                console.log('Duplicate found !');
+                setWarn((current) => ({
+                    ...current,
+                    img: true,
+                    title: true
+                }));
+                setErrors({ messageTitle: "Similar title/url/id found in your WatchData, Duplicate Entries Not Allowed !" });
+                setImg(url);
+                setImgErr("Please Verify Before Submit !");
+                setLoading(false);
+                return false;
+            };
+        };
 
         // Validate Movie title  //
         const validMovie = await isValidIMDBMovie(values.name, values.year);
@@ -199,20 +231,22 @@ const AddItem = () => {
             }));
         };
 
+        // Validate Image
         const isValidImg = await validateImage(values.url);
         setPreviousSubmit((current) => ({
             ...current,
             queryStatus: validMovie,
-            imageStatus: isValidImg
+            imageStatus: isValidImg,
+            updateTitle: showWarn.title,
+            updateImage: showWarn.img
         }));
         console.log('isValidIMG ? >>', isValidImg);
+
         // Set Data to Payload
-        const { name, year, url, watchDate } = values;
         const [watchedDate, watchedTime] = values.watchDate.split('T');
-        const id = values.watchDate;
         let createdAt = new Date().toLocaleString();
         setData({
-            id, name, year, url, watchedDate, watchedTime, watchCount: 1, createdAt
+            id: watchDate, name, year, url, watchedDate, watchedTime, watchCount: 1, createdAt
         });
 
         if (isValidImg && validMovie) {
@@ -226,6 +260,9 @@ const AddItem = () => {
     };
 
     const handleConfirm = async () => {
+
+        status.style.color = "#eeff00";
+        status.innerText = "Submitting Data..."
         setLoading(true);
         console.log(data);
         try {
@@ -234,9 +271,12 @@ const AddItem = () => {
             }).then((resp) => {
                 console.log('addedData', resp);
                 setLoading(false);
-                setImgErr("Completed Upload");
+                // setImgErr("Data Upload Completed !");
+                status.style.color = "#00ff6a";
+                status.innerText = "Data Added Successfully !";
+                setWatchData((current) => ([...current, data]));
                 setShowConfirm(false);
-                return;
+                return true;
             }).catch(e => console.log('PromiseErr', e));
 
         } catch (e) {
@@ -244,35 +284,33 @@ const AddItem = () => {
         }
     };
 
-    const handleFill = (movie) => {
-        console.log('fill called');
-        let oldValues = { name: data.name, image: data.url };
-        let newValues = {
-            name: showWarn.title ? movie?.title : data.name,
-            image: showWarn.img ? movie?.url : data.url
-        };
-        setData((current) => ({
-            ...current,
-            name: showWarn.title ? movie?.title : current.name,
-            url: showWarn.img ? movie?.url : current.url
-        }));
-        setWarn((current) => ({
-            ...current,
-            title: oldValues.name === newValues.name ? current.title : false,
-            img: oldValues.image === newValues.image ? current.img : false
-        }));
-        setShowConfirm(true);
-    };
-
     useEffect(() => {
         const observer = lozad();
         observer.observe();
     });
 
+    // Loads User WatchData
+    const fetchUserData = async () => {
+        await getDoc(doc(db, 'webusers', user.uid)).then((res) => {
+            const value = res?.data();
+            setWatchData(value?.watchData);
+            return true;
+        });
+    };
+
+    useEffect(() => {
+        fetchUserData();
+    }, []);
+
+    const testFnc = async () => {
+        console.log('CALLED FILT');
+    };
+
     return (
         <>
             <Header />
-            <div className="container-fluid addItemBg lozad" style={{ background: `url("https://picsum.photos/1920/1080")` }}>
+            <ToastContainer />
+            <div className="container-fluid addItemBg lozad" style={{ background: `url(${bg ? bg : "https://picsum.photos/1920/1080"})` }}>
                 <div className="row pt-5">
                     <div className="col-12 col-md-6">
                         <div className="addData">
@@ -285,13 +323,13 @@ const AddItem = () => {
                                         <CustomField name='year' type='number' label='Year' />
                                         <CustomField name='watchDate' type='datetime-local' label='Watch Date' />
                                         <CustomField name='url' type='text' label='Image URL' warn={+showWarn.img} />
-
+                                        <p id="submitting"></p>
                                         {loading && <div className="loading"> <p className="text">
                                             Verifying Data... </p>
                                             <div className="loader"></div>
                                         </div>}
                                         <span className="err">{err?.messageTitle}</span>
-                                        <span className="err">{imgErr}</span>
+                                        <span className="err showSuccess">{imgErr}</span>
                                         {!loading && <button type='submit'>Submit</button>}
                                     </Form>
                                 )}
@@ -303,17 +341,69 @@ const AddItem = () => {
                         </div>}
                     </div>
                     <div className="col-12 col-md-6">
-                        {suggestions?.length !== 0 && <h4 style={{ marginBottom: '15px', textAlign: 'center' }}>Suggestions</h4>}
+                        {searchResult?.length !== 0 && suggestions?.length === 0 &&
+                            <h4 style={{ margin: '15px 0px', textAlign: 'center' }}>Search Result</h4>}
                         <div className="suggestionsContainer">
-                            {suggestions?.map((movie) => (
-                                <div key={movie?.id} className="suggestionItem lozad" onClick={e => handleFill(movie)}
-                                    style={{ background: `url(${movie?.image || ""})` }} >
-                                    <span><b>{movie?.title?.slice(0, 20)}</b></span>
-                                    <span>{movie?.resultType}&nbsp;{movie?.description?.slice(0, 6)}</span>
+                            {suggestions?.length === 0 && searchResult?.map((movie) => (
+                                <div key={movie?.id} className="suggestionItem lozad"
+                                    onClick={e => setBg(movie?.image || w500 + movie?.poster_path || w500 + movie?.backdrop_path)}
+                                    style={{
+                                        background: `url(${movie?.image || w500 + movie?.poster_path ||
+                                            w500 + movie?.backdrop_path || ""})`
+                                    }} >
+                                    <span className='pointer' onClick={e => {
+                                        navigator.clipboard.writeText(movie?.title);
+                                        toast.info("Title Copied to clipboard !", {
+                                            position: toast.POSITION.TOP_CENTER
+                                        });
+                                    }}><b>{movie?.title?.slice(0, 20) || movie?.original_title?.slice(0, 20)}</b></span>
+                                    <span>{movie?.resultType}&nbsp;{movie?.description?.slice(0, 20) || movie?.release_date}</span>
                                     <span className='icon'> <a href={`https://imdb.com/title/${movie?.id}`} target='_blank'
                                         rel='noreferrer'>
                                         <Iconify icon='fontisto:imdb' color='#DBA506' borderRadius={1}
                                             height={20} width={20} /></a>
+                                    </span>
+                                    <span className='icon2' onClick={e => {
+                                        navigator.clipboard.writeText(movie?.image || w500 + movie?.poster_path ||
+                                            w500 + movie?.backdrop_path || "");
+                                        toast.info("Image URL Copied to clipboard !", {
+                                            position: toast.POSITION.TOP_CENTER
+                                        });
+                                    }}>
+                                        <Iconify icon='ci:link' color='inherit' borderRadius={1} height={24} width={24} />
+                                    </span>
+                                </div>))}
+                        </div>
+                        {searchResult?.length === 0 && suggestions?.length !== 0 &&
+                            <h4 style={{ margin: '15px 0px', textAlign: 'center' }}>Suggestions</h4>}
+                        <div className="suggestionsContainer">
+                            {searchResult?.length === 0 && suggestions?.map((movie) => (
+                                <div key={movie?.id} className="suggestionItem lozad"
+                                    onClick={e => setBg(movie?.image || w500 + movie?.poster_path || w500 + movie?.backdrop_path)}
+                                    style={{
+                                        background: `url(${movie?.image || w500 + movie?.poster_path ||
+                                            w500 + movie?.backdrop_path || ""})`
+                                    }} >
+                                    <span className='pointer' onClick={e => {
+                                        navigator.clipboard.writeText(movie?.title);
+                                        toast.info("Title Copied to clipboard !", {
+                                            position: toast.POSITION.TOP_CENTER
+                                        });
+                                    }}><b>{movie?.title?.slice(0, 20) || movie?.original_title?.slice(0, 20)}</b></span>
+                                    <span>{movie?.resultType}&nbsp;{movie?.description?.slice(0, 20) || movie?.release_date}</span>
+                                    <span className='icon'> <a href={`https://imdb.com/title/${movie?.id}`} target='_blank'
+                                        rel='noreferrer'>
+                                        <Iconify icon='fontisto:imdb' color='#DBA506' borderRadius={1}
+                                            height={20} width={20} /></a>
+                                    </span>
+                                    <span className='icon2' onClick={e => {
+                                        navigator.clipboard.writeText(movie?.image || w500 + movie?.poster_path ||
+                                            w500 + movie?.backdrop_path || "");
+                                        toast.info("Image URL Copied to clipboard !", {
+                                            position: toast.POSITION.TOP_CENTER
+                                        });
+                                    }}>
+                                        <Iconify icon='ci:link' color='inherit' borderRadius={1} height={24} width={24} />
                                     </span>
                                 </div>))}
                         </div>
