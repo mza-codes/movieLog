@@ -4,18 +4,22 @@ import { Form, Formik } from 'formik';
 import lozad from 'lozad';
 import { useEffect, useState } from 'react';
 import { useContext } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import { Flip, toast, ToastContainer } from 'react-toastify';
 import * as Yup from 'yup';
 import Header from '../../Components/Header/Header';
 import { API_KEY, IMDB_API, TMDB_URL, w500 } from '../../Constants/Constants';
 import { AuthContex } from '../../Contexts/AuthContext';
+import { DataContext } from '../../Contexts/DataContext';
 import { db } from '../../firebaseConfig/firebase';
 import CustomField from '../../Hooks/CustomField';
 import Iconify from '../../Hooks/Iconify';
 import './AddItem.scss';
 
 const AddItem = () => {
+    const route = useNavigate();
     const { user } = useContext(AuthContex);
+    const { movieLog, setMovieLog } = useContext(DataContext);
     const [watchData, setWatchData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
@@ -192,12 +196,12 @@ const AddItem = () => {
             image: values.url,
             year: values.year
         }));
-
         // Verifying Duplicate in DB
         if (watchData.length !== 0) {
+            console.log('FILTERING');
             const exist = await watchData.filter((movie) => {
-                return movie?.name?.toLowerCase() === name &&
-                    movie?.year === year || movie?.url === url || movie?.id === watchDate;
+                return (movie?.name?.toLowerCase() === name.toLowerCase() &&
+                    movie?.year === year) || movie?.url === url || movie?.id === watchDate;
             });
             if (exist?.length !== 0) {
                 // case
@@ -276,7 +280,15 @@ const AddItem = () => {
                 status.innerText = "Data Added Successfully !";
                 setWatchData((current) => ([...current, data]));
                 setShowConfirm(false);
-                return true;
+                toast.success("Title Added Successfully !", {
+                    position: toast.POSITION.TOP_CENTER,
+                    autoClose: 5200,
+                    hideProgressBar: true
+                });
+                setTimeout(() => {
+                    setMovieLog((current) => ([...current, data]));
+                    route('/');
+                }, 5000);
             }).catch(e => console.log('PromiseErr', e));
 
         } catch (e) {
@@ -291,25 +303,49 @@ const AddItem = () => {
 
     // Loads User WatchData
     const fetchUserData = async () => {
+        if (movieLog.length !== 0) {
+            console.log('CONTEXT DATA FOUND');
+            setWatchData(movieLog);
+            return;
+        }
         await getDoc(doc(db, 'webusers', user.uid)).then((res) => {
             const value = res?.data();
             setWatchData(value?.watchData);
+            console.log('FETCHED DATA FROM FIRESTORE');
             return true;
         });
     };
 
     useEffect(() => {
         fetchUserData();
+        setSuggestions(JSON.parse(sessionStorage.getItem('top')));
     }, []);
 
-    const testFnc = async () => {
-        console.log('CALLED FILT');
+    const handleCopy = (movie, param) => {
+        if (param === "image") {
+            navigator.clipboard.writeText(movie?.image || w500 + movie?.poster_path ||
+                w500 + movie?.backdrop_path || "null");
+            toast.info("Image URL Copied to clipboard !", {
+                position: toast.POSITION.TOP_CENTER,
+                hideProgressBar: true,
+                autoClose: 2000
+            });
+            return true;
+        } else {
+            navigator.clipboard.writeText(movie?.title || movie?.original_title || "null");
+            toast.info("Title Copied to clipboard !", {
+                position: toast.POSITION.TOP_CENTER,
+                hideProgressBar: true,
+                autoClose: 2000
+            });
+            return true;
+        };
     };
 
     return (
         <>
             <Header />
-            <ToastContainer />
+            <ToastContainer transition={Flip} theme={"colored"} />
             <div className="container-fluid addItemBg lozad" style={{ background: `url(${bg ? bg : "https://picsum.photos/1920/1080"})` }}>
                 <div className="row pt-5">
                     <div className="col-12 col-md-6">
@@ -351,25 +387,16 @@ const AddItem = () => {
                                         background: `url(${movie?.image || w500 + movie?.poster_path ||
                                             w500 + movie?.backdrop_path || ""})`
                                     }} >
-                                    <span className='pointer' onClick={e => {
-                                        navigator.clipboard.writeText(movie?.title);
-                                        toast.info("Title Copied to clipboard !", {
-                                            position: toast.POSITION.TOP_CENTER
-                                        });
-                                    }}><b>{movie?.title?.slice(0, 20) || movie?.original_title?.slice(0, 20)}</b></span>
-                                    <span>{movie?.resultType}&nbsp;{movie?.description?.slice(0, 20) || movie?.release_date}</span>
+                                    <span className='pointer' onClick={e => { handleCopy(movie, "title") }}>
+                                        <b>{movie?.title?.slice(0, 20) || movie?.original_title?.slice(0, 20)}</b>
+                                    </span>
+                                    <span>{movie?.resultType || "" + " " + movie?.release_date || movie?.description?.slice(0, 14) || ""}</span>
                                     <span className='icon'> <a href={`https://imdb.com/title/${movie?.id}`} target='_blank'
                                         rel='noreferrer'>
                                         <Iconify icon='fontisto:imdb' color='#DBA506' borderRadius={1}
                                             height={20} width={20} /></a>
                                     </span>
-                                    <span className='icon2' onClick={e => {
-                                        navigator.clipboard.writeText(movie?.image || w500 + movie?.poster_path ||
-                                            w500 + movie?.backdrop_path || "");
-                                        toast.info("Image URL Copied to clipboard !", {
-                                            position: toast.POSITION.TOP_CENTER
-                                        });
-                                    }}>
+                                    <span className='icon2' onClick={e => { handleCopy(movie, "image") }}>
                                         <Iconify icon='ci:link' color='inherit' borderRadius={1} height={24} width={24} />
                                     </span>
                                 </div>))}
@@ -383,26 +410,17 @@ const AddItem = () => {
                                     style={{
                                         background: `url(${movie?.image || w500 + movie?.poster_path ||
                                             w500 + movie?.backdrop_path || ""})`
-                                    }} >
-                                    <span className='pointer' onClick={e => {
-                                        navigator.clipboard.writeText(movie?.title);
-                                        toast.info("Title Copied to clipboard !", {
-                                            position: toast.POSITION.TOP_CENTER
-                                        });
-                                    }}><b>{movie?.title?.slice(0, 20) || movie?.original_title?.slice(0, 20)}</b></span>
-                                    <span>{movie?.resultType}&nbsp;{movie?.description?.slice(0, 20) || movie?.release_date}</span>
+                                    }}>
+                                    <span className='pointer' onClick={e => { handleCopy(movie, "title") }}>
+                                        <b>{movie?.title?.slice(0, 20) || movie?.original_title?.slice(0, 20)}</b>
+                                    </span>
+                                    <span>{movie?.resultType || "" + " " + movie?.release_date || movie?.description?.slice(0, 14) || ""}</span>
                                     <span className='icon'> <a href={`https://imdb.com/title/${movie?.id}`} target='_blank'
                                         rel='noreferrer'>
                                         <Iconify icon='fontisto:imdb' color='#DBA506' borderRadius={1}
                                             height={20} width={20} /></a>
                                     </span>
-                                    <span className='icon2' onClick={e => {
-                                        navigator.clipboard.writeText(movie?.image || w500 + movie?.poster_path ||
-                                            w500 + movie?.backdrop_path || "");
-                                        toast.info("Image URL Copied to clipboard !", {
-                                            position: toast.POSITION.TOP_CENTER
-                                        });
-                                    }}>
+                                    <span className='icon2' onClick={e => handleCopy(movie, "image")}>
                                         <Iconify icon='ci:link' color='inherit' borderRadius={1} height={24} width={24} />
                                     </span>
                                 </div>))}
@@ -410,7 +428,6 @@ const AddItem = () => {
                     </div>
                     <div className="col-12 col-md-6">
                         <div className="imgPreview">
-                            <div id="validImg"></div>
                             {img && <img className='lozad' src={img} alt="_preview" />}
                         </div>
                     </div>

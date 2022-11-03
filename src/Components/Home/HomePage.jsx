@@ -7,9 +7,9 @@ import lozad from 'lozad';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-function HomePage({ list }) {
+function HomePage({ list, num }) {
     const elRef = useRef()
-    const [b, setB] = useState(Math.floor(Math.random() * list?.length));
+    const [b, setB] = useState(num);
     const [movie, setMovie] = useState();
 
     useEffect(() => {
@@ -67,7 +67,7 @@ function HomePage({ list }) {
     };
 
     return (
-        <div style={{ backgroundImage: `url(${list.length !== 0 ? POSTER_URL + list[b].backdrop_path : ""})` }}
+        <div style={{ backgroundImage: `url(${list?.length !== 0 ? POSTER_URL + list[b]?.backdrop_path : ""})` }}
             className='bg fade_bottom lozad'>
             <ToastContainer />
             <div className="singleInput">

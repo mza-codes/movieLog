@@ -8,8 +8,9 @@ import Header from '../Header/Header';
 
 export default function Home() {
 
-    const [movies, setMovies] = useState([])
-    const [movies2, setMovies2] = useState([])
+    const [movies, setMovies] = useState([]);
+    const [movies2, setMovies2] = useState([]);
+    let num = 6;
 
     const fetchMovies = (value, key) => {
         return new Promise(async (resolve, reject) => {
@@ -50,6 +51,7 @@ export default function Home() {
         const dat = JSON.parse(sessionStorage.getItem('top'))
         if (data !== null) {
             setMovies(data)
+            num = Math.floor(Math.random() * data?.length);
         }
         if (dat !== null) {
             setMovies2(dat)
@@ -61,7 +63,7 @@ export default function Home() {
     return (
         <div className='App'>
             <Header />
-            <HomePage list={movies ? movies : []} />
+            <HomePage list={movies ? movies : []} num={num} />
             {/* <HomePage list={movies2 ? movies2 : []} /> */}
         </div>
     )
