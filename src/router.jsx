@@ -10,6 +10,7 @@ import ErrorLogo from "./Constants/Error/ErrorLogo";
 import Profile from "./Pages/Profile/Profile";
 import EmailLinkLogin from "./Pages/EmailLinkLogin/EmailLinkLogin";
 import AddItem from "./Pages/AddItem/AddItem";
+import WatchLog from "./Pages/WatchLog/WatchLog";
 
 export default function Router() {
     const { user } = useContext(AuthContex);
@@ -17,13 +18,13 @@ export default function Router() {
         if (!user) {
             return children;
         } else {
-            return <Navigate to="/" replace />;
+            return <Navigate to="/register" replace />;
         }
     };
 
     const UserRoute = ({ user, children }) => {
         if (!user) {
-            return <Navigate to="/" replace />;
+            return <Navigate to="/register" replace />;
         } else {
             return children;
         }
@@ -53,6 +54,7 @@ export default function Router() {
         { path: 'addItem', element: <UserRoute user={user}> <AddItem /> </UserRoute> },
         { path: 'profile', element: <UserRoute user={user}> <Profile /> </UserRoute> },
         { path: 'emailLinkLogin', element: <Protected user={user}> <EmailLinkLogin /> </Protected> },
+        { path: 'watchLog', element: <UserRoute user={user}> <WatchLog /> </UserRoute> },
         // emailLinkLogin
 
         // {
