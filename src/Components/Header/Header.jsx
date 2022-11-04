@@ -17,17 +17,47 @@ const Header = () => {
     const { user } = useContext(AuthContex);
     const [menuPop, setMenuPop] = useState(null);
     const [notifyPopUp, setNotifyPopUp] = useState(null);
-
+    let currentRoute = window.location.pathname;
     const openSearch = Boolean(anchorEl);
     const openMenu = Boolean(menuPop);
     const openNotify = Boolean(notifyPopUp);
+
+    const routes = {
+        home: "/",
+        addItem: "/addItem",
+        watchLog: "/watchLog",
+        profile: "/profile",
+        login: "/login",
+        register: "/register",
+    };
+
+    const navButtonsHome = [
+        <button key="home2" className={currentRoute === routes.home ? "active" : ""}
+            onClick={e => route('/')}>Home</button>,
+        <button key="login" className={currentRoute === routes.login ? "active" : ""}
+            onClick={e => route('/login')}>Login</button>,
+        <button key="register" className={currentRoute === routes.register ? "active" : ""}
+            onClick={e => route('/register')}>Register</button>
+    ];
+
+    const navButtonsUser = [
+        <button key="home" className={currentRoute === routes.home ? "active" : ""}
+            onClick={e => route('/')}>Home</button>,
+        <button key="upload" className={currentRoute === routes.addItem ? "active" : ""}
+            onClick={e => route('/addItem')}>Upload</button>,
+        <button key="history" className={currentRoute === routes.watchLog ? "active" : ""}
+            onClick={e => route('/watchLog')}>WatchLog</button>,
+        <button key="profile" className={currentRoute === routes.profile ? "active" : ""}
+            onClick={e => route('/profile')}>Profile</button>,
+        <button key="logout" onClick={e => signOut(auth)}> Logout</button >
+    ];
 
     return (
         <div>
             <div className="mainHeader">
                 <div className="left">
                     <div>
-                        <IconButton className='popoverbtn' variant="contained" onClick={e => setAnchorEl(e.currentTarget)}>
+                        <IconButton className='searchPopBtn' variant="contained" onClick={e => setAnchorEl(e.currentTarget)}>
                             <Iconify icon='fluent:search-square-24-filled' width={34} height={34} />
                         </IconButton>
                         <Popover
@@ -51,11 +81,10 @@ const Header = () => {
                 </div>
 
                 <div className="right">
-                    <IconButton className='popoverbtn' onClick={e => setNotifyPopUp(e.currentTarget)}>
+                    <IconButton className='notifyPopBtn' onClick={e => setNotifyPopUp(e.currentTarget)}>
                         <Iconify icon='ic:baseline-notifications-active' width={26} height={26} />
                     </IconButton>
                     <Popover
-                        // id={id}
                         open={openNotify}
                         anchorEl={notifyPopUp}
                         onClose={e => setNotifyPopUp(null)}
@@ -64,15 +93,7 @@ const Header = () => {
                             horizontal: 'left',
                         }}>
                         <div className="notifications">
-                            <button onClick={() => route('/')}>Home</button>
-                            {user ? <>
-                                <button onClick={e => signOut(auth)}>Logout</button>
-                                <button onClick={e => route('/profile')}>Profile</button>
-                            </> : <>
-                                <button onClick={() => route('/login')}>Login</button>
-                                <button onClick={() => route('/register')}>Register</button>
-                            </>}
-
+                            {user ? navButtonsUser : navButtonsHome}
                         </div>
                     </Popover>
                     {isMd ? <div>
@@ -80,7 +101,6 @@ const Header = () => {
                             <Iconify icon='eva:menu-2-outline' width={34} height={34} />
                         </IconButton>
                         <Popover
-                            // id={id}
                             open={openMenu}
                             anchorEl={menuPop}
                             onClose={e => setMenuPop(null)}
@@ -89,26 +109,10 @@ const Header = () => {
                                 horizontal: 'right',
                             }}>
                             <div className="navPop">
-                                <button onClick={() => route('/')}>Home</button>
-                                {user ? <>
-                                    <button onClick={e => signOut(auth)}>Logout</button>
-                                    <button onClick={e => route('/profile')}>Profile</button>
-                                </> : <>
-                                    <button onClick={() => route('/login')}>Login</button>
-                                    <button onClick={() => route('/register')}>Register</button>
-                                </>}
-
+                                {user ? navButtonsUser : navButtonsHome}
                             </div>
                         </Popover>
-                    </div> : <>
-                        <button onClick={() => route('/')}>Home</button>
-                        <button onClick={() => route('/addItem')}>Add Item</button>
-                        <button onClick={() => route('/watchLog')}>Log</button>
-                        {user ? <> <button onClick={e => signOut(auth)}>Logout</button>
-                            <button onClick={e => route('/profile')}>Profile</button>
-                        </> : <> <button onClick={() => route('/login')}>Login</button>
-                            <button onClick={() => route('/register')}>Register</button>
-                        </>} </>}
+                    </div> : <> {user ? navButtonsUser : navButtonsHome} </>}
                 </div>
 
             </div>

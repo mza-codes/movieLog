@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../Components/Header/Header';
 import { DataContext } from '../../Contexts/DataContext';
@@ -15,17 +15,21 @@ function WatchLog() {
     const [openSort, setOpenSort] = useState(null);
     const [label, setLabel] = useState('');
     const [urlSearch, setUrlSearch] = useState(false);
-    console.log("urlSearch Status", urlSearch);
     const alpha = /^[A-Za-z ]+$/;
     const regExNumbers = /^[0-9 ]+$/;
+    const setData = useCallback(() => {
+        console.log('INSIDE USECALLBACK');
+        setWatchLog(movieLog);
+    }, []);
+
 
     useEffect(() => {
-        console.log('movieLOG', movieLog);
-        setWatchLog(movieLog);
+
+        setData();
         if (movieLog.length <= 0) {
             setView(false);
         };
-    }, [movieLog]);
+    }, []);
 
     const SORT_BY_OPTIONS = [
         { value: 'name', state: '-', label: 'Featured' },
@@ -41,6 +45,7 @@ function WatchLog() {
         e.preventDefault();
         console.log(value);
         setWatchLog(_.sortBy(watchLog, value).reverse());
+        return;
     };
 
     const handleSearch = (query) => {
@@ -54,7 +59,6 @@ function WatchLog() {
                 return data.name.toLowerCase().includes(query.toLowerCase()) ||
                     (urlSearch && data.url.toLowerCase().includes(query.toLowerCase()))
             });
-            console.log("Results forWord: " + query, result);
             setWatchLog(result);
             return;
 
@@ -62,15 +66,14 @@ function WatchLog() {
             result = movieLog.filter((data) => {
                 return data.year <= query;
             });
-            console.log("Results forNumber: " + query, result);
             setWatchLog(result);
             return;
+
         } else {
             result = movieLog.filter((data) => {
                 return data.watchedDate.includes(query) || data.watchedTime.includes(query) ||
                     data.id.includes(query) || data.createdAt.includes(query)
-            })
-            console.log("Results forMixed: " + query, result);
+            });
             setWatchLog(result);
             return;
         };
@@ -137,7 +140,6 @@ function WatchLog() {
                                     <h6>{movie?.watchedTime}</h6>
                                     {!movie?.watchCount === 1 && <Badge badgeContent={movie?.watchCount} color="success" />}
                                 </div>
-                                {/* <p>Added On: {movie?.createdAt}</p> */}
                             </div>
                         ))}
                     </div>
