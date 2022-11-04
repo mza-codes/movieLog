@@ -1,11 +1,13 @@
 .mainHeader {
     display: flex;
+    overflow-x: hidden;
+    overflow-y: hidden;
     flex-direction: row;
     align-items: center;
     height: 7vh;
     padding: 10px;
     // background: #fc9652;
-    background: linear-gradient(to right, #fc9652,#fc5692);
+    background: linear-gradient(to right, #fc9652, #fc5692);
     box-shadow: 0 5px 20px -10px #000;
     z-index: 99;
     top: 0;
@@ -42,16 +44,31 @@
         justify-content: flex-end;
 
         button {
-            padding: 10px;
+            padding: 8px 10px;
             border: none;
             background-color: transparent;
             transition: scale 500ms;
             transition: transform 500ms;
             font-weight: 600;
+            // background: linear-gradient(0.90turn, #fc9652,#fff,#fc5692);
+            // background: rgba($color: rgb(255, 252, 252), $alpha: 0.6);
+            border-radius: 28px;
+        }
+
+        .active{
+            background: rgba($color: #fff, $alpha: 0.7);
+            border-radius: 23px 23px 3px 23px;
+            &:hover{
+                border-radius: 23px 23px 3px 23px;
+                transform: scale(1.1);
+            }
         }
 
         button:hover {
-            transform: scale(1.2);
+            background: rgba($color: #000, $alpha: 0.6);
+            border-radius: 30px 10px 30px 30px;
+            color: #fff;
+            transform: scale(1.1);
         }
     }
 }
@@ -65,11 +82,18 @@
     }
 }
 
-.popoverbtn {
+.searchPopBtn {
     color: rgba(0, 0, 0, 0.418) !important;
-
     :hover {
         color: black;
+    }
+}
+
+.notifyPopBtn {
+    color: rgba(0, 0, 0, 0.418) !important;
+    border-radius: 50% !important;
+    :hover {
+        color: #fff;
     }
 }
 
