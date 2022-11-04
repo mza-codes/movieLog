@@ -141,7 +141,7 @@ function WatchLog() {
                         {watchLog?.map((movie, i) => (
                             <div className="itemBg lozad" key={movie.id} style={{ backgroundImage: `url(${movie?.url})` }}>
                                 <div className="editBtn">
-                                    <IconButton sx={{ color: "inherit" }} onClick={e => route(`/editItem/${movie?.id}`)} 
+                                    <IconButton sx={{ color: "inherit" }} onClick={e => route(`/editItem/${movie?.id}`)}
                                     // onClick={e => route(`/editItem/${movie?.id}`)} onClick={e => editTitle(movie)}
                                     >
                                         <Iconify icon="bxs:message-rounded-edit" />

@@ -14,15 +14,12 @@ import { DataContext } from '../../Contexts/DataContext';
 import { db } from '../../firebaseConfig/firebase';
 import CustomField from '../../Hooks/CustomField';
 import Iconify from '../../Hooks/Iconify';
-import EditForm from './EditForm';
 import './EditItem.scss';
 
 const EditItem = () => {
     const route = useNavigate();
     const params = useParams();
     const itemId = params.id;
-    // let value = [];
-    const [editItem, setEditItem] = useState({});
     const { user } = useContext(AuthContex);
     const { movieLog, setMovieLog } = useContext(DataContext);
     const [watchData, setWatchData] = useState([]);
@@ -53,6 +50,11 @@ const EditItem = () => {
     const [bg, setBg] = useState(null);
     const status = document.querySelector('.showSuccess');
 
+    let value = [];
+    value = movieLog?.filter((data) => {
+        return data.id === itemId
+    });
+    
     // Validations
     const regExURL = /^((https?|ftp):\/\/)?(www.)?(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i
 
@@ -306,24 +308,23 @@ const EditItem = () => {
         observer.observe();
     });
 
-    // Loads User WatchData
-    const fetchUserData = async () => {
-        if (movieLog.length !== 0) {
-            console.log('CONTEXT DATA FOUND');
-            setWatchData(movieLog);
-            return;
-        }
-        await getDoc(doc(db, 'webusers', user.uid)).then((res) => {
-            const value = res?.data();
-            setWatchData(value?.watchData);
-            console.log('FETCHED DATA FROM FIRESTORE');
-            return true;
-        });
-    };
-
     useEffect(() => {
+        // Loads User WatchData
+        const fetchUserData = async () => {
+            if (movieLog.length !== 0) {
+                console.log('CONTEXT DATA FOUND');
+                setWatchData(movieLog);
+                return;
+            }
+            await getDoc(doc(db, 'webusers', user.uid)).then((res) => {
+                const value = res?.data();
+                setWatchData(value?.watchData);
+                console.log('FETCHED DATA FROM FIRESTORE');
+                return true;
+            });
+        };
         fetchUserData();
-        setSuggestions(JSON.parse(sessionStorage.getItem('top')));
+        setImg(value[0]?.url);
     }, []);
 
     const handleCopy = (movie, param) => {
@@ -347,43 +348,23 @@ const EditItem = () => {
         };
     };
 
-    // Edit Item
-    useEffect(() => {
-        let value = movieLog.filter((data) => {
-            return data.id === itemId
-        });
-        console.log(value);
-        if (value.length !== 0) {
-            setEditItem(value[0]);
-            setImg(value[0]?.url);
-            console.log(editItem);
-        }
-    }, [itemId]);
-    // console.log(editItem);
     const editValues = {
-        name: editItem?.name,
-        year: editItem?.year,
-        url: editItem?.url,
-        watchDate: editItem?.id,
-    }
-    // const editValues = {
-    //     name: value[0]?.name,
-    //     year: value[0]?.year,
-    //     url: value[0]?.url,
-    //     watchDate: value[0]?.id,
-    // }
+        name: value[0]?.name,
+        year: value[0]?.year,
+        url: value[0]?.url,
+        watchDate: value[0]?.id,
+    };
 
     return (
         <>
+            <Header />
             <ToastContainer transition={Flip} theme={"colored"} />
             <div className="container-fluid addItemBg lozad" style={{ background: `url(${bg ? bg : "https://picsum.photos/1920/1080"})` }}>
                 <div className="row pt-5">
                     <div className="col-12 col-md-6">
                         <div className="addData">
                             <h4 className='mainTitle'>Input Data</h4>
-                            <EditForm onSubmit={handleSubmit} initialValues={editValues} validationSchema={itemSchema}
-                            showWarn={+showWarn} loading={+loading} err={err} imgErr={imgErr} />
-                            {/* <Formik onSubmit={handleSubmit} initialValues={editValues} validationSchema={itemSchema}>
+                            <Formik onSubmit={handleSubmit} initialValues={editValues} validationSchema={itemSchema}>
                                 {(props) => (
                                     <Form>
                                         <CustomField name='name' type='text' label='Title' warn={+showWarn.title} />
@@ -400,7 +381,7 @@ const EditItem = () => {
                                         {!loading && <button type='submit'>Submit</button>}
                                     </Form>
                                 )}
-                            </Formik> */}
+                            </Formik>
                         </div>
                         {showConfirm && <div className="confirm center p-2">
                             <button onClick={handleConfirm} className="confimBtn p-2">
