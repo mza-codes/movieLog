@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../Components/Header/Header';
 import { DataContext } from '../../Contexts/DataContext';
-import { Menu, Button, MenuItem, Typography, Popover, Avatar, Badge } from '@mui/material';
+import { Button, Popover, Badge } from '@mui/material';
 import './WatchLog.scss';
 import Iconify from '../../Hooks/Iconify';
 import * as _ from 'lodash';
@@ -14,14 +14,18 @@ function WatchLog() {
     const [view, setView] = useState(true);
     const [openSort, setOpenSort] = useState(null);
     const [label, setLabel] = useState('');
+    const [urlSearch, setUrlSearch] = useState(false);
+    console.log("urlSearch Status", urlSearch);
+    const alpha = /^[A-Za-z ]+$/;
+    const regExNumbers = /^[0-9 ]+$/;
 
     useEffect(() => {
-        console.log('logFF', movieLog);
+        console.log('movieLOG', movieLog);
         setWatchLog(movieLog);
         if (movieLog.length <= 0) {
             setView(false);
-        }
-    }, []);
+        };
+    }, [movieLog]);
 
     const SORT_BY_OPTIONS = [
         { value: 'name', state: '-', label: 'Featured' },
@@ -32,17 +36,44 @@ function WatchLog() {
         { value: 'watchedDate', state: 'priceHigh', label: 'Yearly' },
 
     ];
+
     const handleSort = (e, value, action) => {
         e.preventDefault();
         console.log(value);
-        let data = _.sortBy(watchLog, value).reverse();
-        setWatchLog(data);
+        setWatchLog(_.sortBy(watchLog, value).reverse());
     };
 
-    const handleSort2 = (e, value, action) => {
-        e.preventDefault();
-        console.log(value);
-        setWatchLog(_.sortBy(watchLog, value).reverse());
+    const handleSearch = (query) => {
+        let result = []
+        console.log('searchValue', query);
+        const isWord = alpha.test(query);
+        const isNumber = regExNumbers.test(query);
+        console.log(isWord, isNumber);
+        if (isWord) {
+            result = movieLog.filter((data) => {
+                return data.name.toLowerCase().includes(query.toLowerCase()) ||
+                    (urlSearch && data.url.toLowerCase().includes(query.toLowerCase()))
+            });
+            console.log("Results forWord: " + query, result);
+            setWatchLog(result);
+            return;
+
+        } else if (isNumber) {
+            result = movieLog.filter((data) => {
+                return data.year <= query;
+            });
+            console.log("Results forNumber: " + query, result);
+            setWatchLog(result);
+            return;
+        } else {
+            result = movieLog.filter((data) => {
+                return data.watchedDate.includes(query) || data.watchedTime.includes(query) ||
+                    data.id.includes(query) || data.createdAt.includes(query)
+            })
+            console.log("Results forMixed: " + query, result);
+            setWatchLog(result);
+            return;
+        };
     };
 
     return (
@@ -51,7 +82,7 @@ function WatchLog() {
             <div className="container-fluid watchLog">
                 <div className="row center Title">
                     <h2 className='mainHead'>My WatchLog</h2>
-                    {watchLog?.length === 0 && <>
+                    {!view && <>
                         <p>You have'nt added anything in your movieLog! <br />Please Add Titles to View Here</p>
                         <button onClick={e => route('/addItem')} className="navigateBtn">Add Title</button> </>}
                     <p className='error'></p>
@@ -59,8 +90,12 @@ function WatchLog() {
                 </div>
                 {view && <div className="sortWrapper">
                     <div className="searcher">
-                        <input type="text" placeholder='Search From Titles...' />
-                        <button>Search</button>
+                        <input type="text" onChange={e => handleSearch(e.target.value)} placeholder='Search From Titles...' />
+                        <div className='urlBox'>
+                            <input type="checkbox" onChange={e => setUrlSearch(!urlSearch)} />
+                            <span>URL</span>
+                        </div>
+                        {/* <button onClick={handleSearch} >Search</button> */}
                     </div>
                     <Button
                         color="inherit"
@@ -82,7 +117,7 @@ function WatchLog() {
                                 <button className='selectBtn' key={option.label} value={option.value}
                                     onClick={(e) => {
                                         setLabel(option.label); setOpenSort(null);
-                                        handleSort2(e, option.value, option.state)
+                                        handleSort(e, option.value, option.state)
                                     }} >
                                     {option.label}
                                 </button>

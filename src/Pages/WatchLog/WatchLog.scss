@@ -13,6 +13,9 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        margin: 0px 50px;
+        gap: 10px;
+        flex-wrap: wrap;
 
         button {
             font-weight: 700;
@@ -167,9 +170,25 @@
     align-items: center;
     justify-content: center;
 
+    .urlBox {
+        display: flex;
+        flex-direction: column;
+        background: rgba($color: #fff, $alpha: 0.5);
+        padding: 3px 6px;
+        border-radius: 8px;
+        color: #000;
+
+        span {
+            display: flex;
+            flex-wrap: wrap;
+            font-weight: 700;
+            font-size: smaller;
+        }
+    }
+
     input {
         border-radius: 12px;
-        border: none;
+        border: 0.5px solid grey;
         outline: none;
         padding: 8px;
 
@@ -178,9 +197,16 @@
         }
     }
 
+    // input[type="checkbox"]{
+    //     width: 16px;
+    //     height: 16px;
+    //     border: none;
+    // }
+
     button {
         border: none;
         padding: 8px 12px;
+        scale: 0.9;
         height: inherit;
         border-radius: 12px;
         background: rgba($color: #fff, $alpha: 0.8);
