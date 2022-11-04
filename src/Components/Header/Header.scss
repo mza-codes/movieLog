@@ -55,10 +55,12 @@
             border-radius: 28px;
         }
 
-        .active{
+        .active {
             background: rgba($color: #fff, $alpha: 0.7);
             border-radius: 23px 23px 3px 23px;
-            &:hover{
+            font-size: large;
+
+            &:hover {
                 border-radius: 23px 23px 3px 23px;
                 transform: scale(1.1);
             }
@@ -83,16 +85,18 @@
 }
 
 .searchPopBtn {
-    color: rgba(0, 0, 0, 0.418) !important;
-    :hover {
-        color: black;
+    color: rgba($color: #000000, $alpha: 0.6) !important;
+
+    &:hover {
+        color: rgba($color: #000000, $alpha: 1) !important;
     }
 }
 
 .notifyPopBtn {
-    color: rgba(0, 0, 0, 0.418) !important;
+    color: rgba($color: #000000, $alpha: 0.3);
     border-radius: 50% !important;
-    :hover {
+
+    &:hover {
         color: #fff;
     }
 }

@@ -11,6 +11,7 @@ import Profile from "./Pages/Profile/Profile";
 import EmailLinkLogin from "./Pages/EmailLinkLogin/EmailLinkLogin";
 import AddItem from "./Pages/AddItem/AddItem";
 import WatchLog from "./Pages/WatchLog/WatchLog";
+import EditItem from "./Pages/EditItem/EditItem";
 
 export default function Router() {
     const { user } = useContext(AuthContex);
@@ -61,6 +62,7 @@ export default function Router() {
         { path: 'profile', element: <UserRoute user={user}> <Profile /> </UserRoute> },
         { path: 'emailLinkLogin', element: <Protected user={user}> <EmailLinkLogin /> </Protected> },
         { path: 'watchLog', element: watchLogRoute },
+        { path: 'editItem/:id', element: <UserRoute user={user}> <EditItem /> </UserRoute> },
         // emailLinkLogin
 
         // {
