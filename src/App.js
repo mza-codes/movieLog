@@ -37,8 +37,6 @@ export default function App() {
 
   }, []);
 
-
-
   return (
     <BrowserRouter>
       {/* NAVBAR GOES HERE */}

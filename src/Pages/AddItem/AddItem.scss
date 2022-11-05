@@ -125,13 +125,14 @@
         height: 100%;
         margin-top: 20px;
         border-radius: 10px;
+        margin-top: -100px;
     }
 }
 
 @media (max-width: 768px) {
     .imgPreview {
         img {
-            margin-top: 20px;
+            margin-top: 20px ;
             max-width: 90vw;
             width: 100%;
             height: 100%;
@@ -161,7 +162,22 @@
     }
 
     .resBtns{
-        position: relative;
+        width: 100%;
+        margin: 14px 50px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 10px;
+        button{
+            border: none;
+            font-weight: 500;
+            background: transparent;
+            color: rgba($color: #fff, $alpha: 0.4) !important;
+            color: #000;
+            &:hover{
+                color: rgba($color: #fff, $alpha: 0.8) !important;
+            }
+        }
     }
 
     .suggestionItem {

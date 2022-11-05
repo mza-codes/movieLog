@@ -117,11 +117,24 @@
             .addBtn {
                 display: none;
                 position: absolute;
-                bottom: 3px;
+                bottom: 6px;
                 right: 3px;
                 transition: scale 900ms;
                 transition: transform 600ms;
-                color: #09ff3e;
+                color: #38ff63;
+                &:hover {
+                    transform: scale(1.3);
+                }
+            }
+
+            .minusBtn{
+                display: none;
+                position: absolute;
+                bottom: 6px;
+                left: 3px;
+                transition: scale 900ms;
+                transition: transform 600ms;
+                color: #ff3434;
                 &:hover {
                     transform: scale(1.3);
                 }
@@ -152,6 +165,10 @@
                 }
 
                 .addBtn {
+                    display: block;
+                }
+
+                .minusBtn{
                     display: block;
                 }
             }

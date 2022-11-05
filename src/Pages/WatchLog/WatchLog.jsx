@@ -8,13 +8,14 @@ import Iconify from '../../Hooks/Iconify';
 import * as _ from 'lodash';
 import EditItem from '../EditItem/EditItem';
 import { dateOptions } from '../../Utils/TimeFormats';
-import { doc, updateDoc } from 'firebase/firestore';
+import { arrayRemove, arrayUnion, doc, FieldValue, increment, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig/firebase';
 import { AuthContex } from '../../Contexts/AuthContext';
 
 function WatchLog() {
     const route = useNavigate();
     const { user } = useContext(AuthContex);
+    const [watchCount, setWatchCount] = useState(0);
     const { movieLog } = useContext(DataContext);
     const [editData, setEditData] = useState({});
     const [reverse, setReverse] = useState(true);
@@ -32,23 +33,23 @@ function WatchLog() {
         setWatchLog(_.sortBy(movieLog, 'name').reverse());
     }, []);
 
-    let updatedLog = [];
-
     const myFunction = async () => {
-        const myLog = movieLog?.map((movie, i) => {
-            movie.createdAt = new Date(movie?.createdAt).toLocaleString("en-IN", dateOptions);
-            return movie;
-        });
-        setWatchLog(myLog);
-
-        // await updateDoc(doc(db, "webusers", user.uid), {
-        //     myDoc: myLog
-        // }).then(() => console.log("OK,Check Firestore"))
-        //     .catch(e => console.log(e));
+        // const myLog = movieLog?.map((movie, i) => {
+        //     movie.createdAt = new Date(movie?.createdAt).toLocaleString("en-IN", dateOptions);
+        //     return movie;
+        // });
+        // console.log(myLog);
+        let item = movieLog[5];
+        console.log(item);
+        await updateDoc(doc(db, "webusers", user.uid), {
+            watchCount: arrayRemove(item)
+        }).then(() => console.log("OK,Check Firestore"))
+            .catch(e => console.log(e));
     };
 
     useEffect(() => {
         setData();
+        console.log(movieLog);
         // myFunction();
         if (movieLog?.length <= 0) {
             setView(false);
@@ -102,6 +103,34 @@ function WatchLog() {
             setWatchLog(result);
             return;
         };
+    };
+
+    const addWatchCount = (movie) => {
+        let data = [];
+        movie.watchCount = parseInt(movie.watchCount) + 1;
+        setWatchLog((current) =>
+        ([...current.filter((data) => {
+            return data.id !== movie.id
+        }), movie]));
+        return true;
+    };
+
+    const addCount = (movie) => {
+        movie.watchCount = parseInt(movie.watchCount) + 1;
+        setWatchCount(movie.watchCount);
+        const counter = document.getElementById(movie.id);
+        console.log(counter);
+        counter.badgeContent = movie.watchCount;
+        return movie;
+    };
+
+    const minusCount = (movie) => {
+        movie.watchCount = parseInt(movie.watchCount) - 1;
+        setWatchCount(movie.watchCount);
+        const counter = document.getElementById(movie.id);
+        console.log(counter);
+        counter.badgeContent = movie.watchCount;
+        return movie;
     };
 
     return (
@@ -165,9 +194,7 @@ function WatchLog() {
                         {watchLog?.map((movie, i) => (
                             <div className="itemBg lozad" key={movie.id} style={{ backgroundImage: `url(${movie?.url})` }}>
                                 <div className="editBtn">
-                                    <IconButton sx={{ color: "inherit" }} onClick={e => route(`/editItem/${movie?.id}`)}
-                                    // onClick={e => route(`/editItem/${movie?.id}`)} onClick={e => editTitle(movie)}
-                                    >
+                                    <IconButton sx={{ color: "inherit" }} onClick={e => route(`/editItem/${movie?.id}`)}>
                                         <Iconify icon="bxs:message-rounded-edit" />
                                     </IconButton>
                                 </div>
@@ -176,13 +203,22 @@ function WatchLog() {
                                     <h6>Released: {movie?.year}</h6>
                                     <h5>{movie?.watchedDate}</h5>
                                     <h6>{movie?.watchedTime}</h6>
-                                    {!movie?.watchCount === 1 && <Badge badgeContent={movie?.watchCount} color="success" />}
+                                    <div>
+                                        <Badge id={movie.id} badgeContent={movie?.watchCount !== 1 ? movie?.watchCount : 0}
+                                            color="warning" />
+                                    </div>
                                 </div>
                                 <div className="addBtn">
-                                    <IconButton sx={{ color: "inherit" }}>
-                                        <Iconify icon="fluent:add-square-multiple-20-filled" />
+                                    <IconButton sx={{ color: "inherit" }} onClick={e => addCount(movie)}>
+                                        <Iconify icon="clarity:plus-circle-solid" />
                                     </IconButton>
                                 </div>
+                                {/* fluent:add-square-multiple-20-filled,majesticons:plus-five-circle,material-symbols:exposure-plus-1-rounded */}
+                                {movie?.watchCount !== 1 && <div className="minusBtn">
+                                    <IconButton sx={{ color: "inherit" }} onClick={e => minusCount(movie)}>
+                                        <Iconify icon="akar-icons:circle-minus-fill" />
+                                    </IconButton>
+                                </div>}
                             </div>
                         ))}
                     </div>
