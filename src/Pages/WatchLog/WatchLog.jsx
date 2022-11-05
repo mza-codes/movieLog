@@ -23,7 +23,7 @@ function WatchLog() {
     const regExNumbers = /^[0-9 ]+$/;
     const setData = useCallback(() => {
         console.log('INSIDE USECALLBACK');
-        setWatchLog(movieLog);
+        setWatchLog(movieLog?.reverse());
     }, []);
 
 
