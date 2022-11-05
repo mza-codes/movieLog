@@ -154,9 +154,14 @@
     justify-content: center;
     overflow-y: scroll;
     max-height: 60vh;
+    position: relative;
 
     &::-webkit-scrollbar {
         display: none;
+    }
+
+    .resBtns{
+        position: relative;
     }
 
     .suggestionItem {

@@ -267,7 +267,9 @@ const EditItem = () => {
         const [watchedDate, watchedTime] = values.watchDate.split('T');
         let updatedAt = new Date().toLocaleString("en-IN", dateOptions);
         setData({
-            id: watchDate, name, year, url, watchedDate, watchedTime, watchCount: 1, updatedAt
+            id: watchDate, name, year, url, watchedDate, watchedTime, watchCount: 1,
+            createdAt: value[0]?.createdAt || updatedAt,
+            updatedAt
         });
 
         if (isValidImg && validMovie) {
@@ -318,7 +320,7 @@ const EditItem = () => {
                     setLoading(false);
                     status.style.color = "#00ff6a";
                     status.innerText = "Data Added Successfully !";
-                    const filtered = watchData.filter((data)=>{
+                    const filtered = watchData.filter((data) => {
                         return data.id !== itemId
                     });
                     filtered.push(data);
@@ -335,12 +337,22 @@ const EditItem = () => {
                         // setMovieLog((current) => ([...current, data]));
                         route('/');
                     }, 5000);
-                }).catch(e => console.log(e));
+                }).catch(e => {
+                    console.log(e);
+                    setLoading(false);
+                    setImgErr(e?.message);
+                });
 
-            }).catch(e => console.log('PromiseErr', e));
+            }).catch(e => {
+                console.log('PromiseErr', e);
+                setLoading(false);
+                setImgErr(e?.message);
+            });
 
         } catch (e) {
             console.log("Error Occured While Data Submission", e);
+            setLoading(false);
+            setImgErr(e?.message);
         }
     };
 

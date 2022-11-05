@@ -180,8 +180,9 @@ const AddItem = () => {
             // loads image
             validImg.src = url;
         })
-    }
+    };
 
+    // Handling Form Submit and Extra Validations
     const handleSubmit = async (values, actions) => {
         console.log('handleSubmit CALLED');
         const { name, year, url, watchDate } = values;
@@ -263,8 +264,8 @@ const AddItem = () => {
         setLoading(false);
     };
 
+    // Handling Confirm,Upload to Server
     const handleConfirm = async () => {
-
         status.style.color = "#eeff00";
         status.innerText = "Submitting Data..."
         setLoading(true);
@@ -303,7 +304,7 @@ const AddItem = () => {
 
     // Loads User WatchData
     const fetchUserData = async () => {
-        if (movieLog.length !== 0) {
+        if (movieLog?.length !== 0) {
             console.log('CONTEXT DATA FOUND');
             setWatchData(movieLog);
             return;
@@ -404,7 +405,7 @@ const AddItem = () => {
                         {searchResult?.length === 0 && suggestions?.length !== 0 &&
                             <h4 style={{ margin: '15px 0px', textAlign: 'center' }}>Suggestions</h4>}
                         <div className="suggestionsContainer">
-                            {searchResult?.length === 0 && suggestions?.map((movie) => (
+                            {searchResult?.length === 0 && suggestions?.slice(0,16).map((movie) => (
                                 <div key={movie?.id} className="suggestionItem lozad"
                                     onClick={e => setBg(movie?.image || w500 + movie?.poster_path || w500 + movie?.backdrop_path)}
                                     style={{
@@ -424,6 +425,10 @@ const AddItem = () => {
                                         <Iconify icon='ci:link' color='inherit' borderRadius={1} height={24} width={24} />
                                     </span>
                                 </div>))}
+                                <div className="resBtns">
+                                    <button>next</button>
+                                    <button>prev</button>
+                                </div>
                         </div>
                     </div>
                     <div className="col-12 col-md-6">

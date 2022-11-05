@@ -7,11 +7,17 @@ import './WatchLog.scss';
 import Iconify from '../../Hooks/Iconify';
 import * as _ from 'lodash';
 import EditItem from '../EditItem/EditItem';
+import { dateOptions } from '../../Utils/TimeFormats';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../firebaseConfig/firebase';
+import { AuthContex } from '../../Contexts/AuthContext';
 
 function WatchLog() {
     const route = useNavigate();
+    const { user } = useContext(AuthContex);
     const { movieLog } = useContext(DataContext);
     const [editData, setEditData] = useState({});
+    const [reverse, setReverse] = useState(true);
     const [edit, setEdit] = useState(false);
     // let movieLog = []; // dev testing
     const [watchLog, setWatchLog] = useState([]);
@@ -23,14 +29,28 @@ function WatchLog() {
     const regExNumbers = /^[0-9 ]+$/;
     const setData = useCallback(() => {
         console.log('INSIDE USECALLBACK');
-        setWatchLog(movieLog?.reverse());
+        setWatchLog(_.sortBy(movieLog, 'name').reverse());
     }, []);
 
+    let updatedLog = [];
+
+    const myFunction = async () => {
+        const myLog = movieLog?.map((movie, i) => {
+            movie.createdAt = new Date(movie?.createdAt).toLocaleString("en-IN", dateOptions);
+            return movie;
+        });
+        setWatchLog(myLog);
+
+        // await updateDoc(doc(db, "webusers", user.uid), {
+        //     myDoc: myLog
+        // }).then(() => console.log("OK,Check Firestore"))
+        //     .catch(e => console.log(e));
+    };
 
     useEffect(() => {
-
         setData();
-        if (movieLog.length <= 0) {
+        // myFunction();
+        if (movieLog?.length <= 0) {
             setView(false);
         };
     }, []);
@@ -48,7 +68,8 @@ function WatchLog() {
     const handleSort = (e, value, action) => {
         e.preventDefault();
         console.log(value);
-        setWatchLog(_.sortBy(watchLog, value).reverse());
+        reverse ? setWatchLog(_.sortBy(watchLog, value).reverse())
+            : setWatchLog(_.sortBy(watchLog, value))
         return;
     };
 
@@ -83,10 +104,6 @@ function WatchLog() {
         };
     };
 
-    const editTitle = (movie) => {
-        console.log('called');
-    };
-
     return (
         <div >
             <Header />
@@ -107,37 +124,44 @@ function WatchLog() {
                             <span>URL</span>
                         </div></Tooltip>
                     </div>
-                    <Button
-                        color="inherit"
-                        disableRipple
-                        onClick={e => setOpenSort(e.currentTarget)}
-                        endIcon={<Iconify icon={openSort ? 'bi:sort-up-alt' : 'bi:sort-down'} />}
-                    // startIcon={<Iconify icon='bxs:sort-alt' />}
-                    >Sort By:&nbsp;<b>{label}</b>
-                    </Button>
-                    <Popover
-                        anchorEl={openSort}
-                        open={Boolean(openSort)}
-                        onClose={e => setOpenSort(null)}
-                        // onClick={() => { setReload(false) }}
-                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    > <div className="sortOption">
-                            {SORT_BY_OPTIONS.map((option) => (
-                                <button className='selectBtn' key={option.label} value={option.value}
-                                    onClick={(e) => {
-                                        setLabel(option.label); setOpenSort(null);
-                                        handleSort(e, option.value, option.state)
-                                    }} >
-                                    {option.label}
-                                </button>
-                            ))}
-                        </div>
-                    </Popover>
+                    <div>
+                        <IconButton sx={{ color: "inherit" }} onClick={e => setReverse(!reverse)}>
+                            <Iconify icon={reverse ? "heroicons-solid:sort-descending" :
+                                "heroicons-solid:sort-ascending"} />
+                            {/* fa:sort-alpha-asc , fa-solid:sort-amount-up , heroicons-solid:sort-descending , prime:sort-alpha-alt-up */}
+                        </IconButton>
+                        <Button
+                            color="inherit"
+                            disableRipple
+                            onClick={e => setOpenSort(e.currentTarget)}
+                            endIcon={<Iconify icon={openSort ? 'bi:sort-up-alt' : 'bi:sort-down'} />}
+                        // startIcon={<Iconify icon='bxs:sort-alt' />}
+                        >Sort By:&nbsp;<b>{label}</b>
+                        </Button>
+                        <Popover
+                            anchorEl={openSort}
+                            open={Boolean(openSort)}
+                            onClose={e => setOpenSort(null)}
+                            // onClick={() => { setReload(false) }}
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        > <div className="sortOption">
+                                {SORT_BY_OPTIONS.map((option) => (
+                                    <button className='selectBtn' key={option.label} value={option.value}
+                                        onClick={(e) => {
+                                            setLabel(option.label); setOpenSort(null);
+                                            handleSort(e, option.value, option.state)
+                                        }} >
+                                        {option.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </Popover>
+                    </div>
                 </div>}
                 <div>
                     <div className="logContainer">
-                        {watchLog.length === 0 && <h1 className='notFoundErr'>Title Not Found! </h1>}
+                        {watchLog.length === 0 && <h1 className='notFoundErr'>No Titles Found!</h1>}
                         {watchLog?.map((movie, i) => (
                             <div className="itemBg lozad" key={movie.id} style={{ backgroundImage: `url(${movie?.url})` }}>
                                 <div className="editBtn">
