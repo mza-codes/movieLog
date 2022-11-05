@@ -76,6 +76,10 @@
         width: 100%;
         height: auto;
 
+        .notFoundErr {
+            font-weight: 800;
+        }
+
         .itemBg {
             display: flex;
             flex-direction: column;
@@ -92,11 +96,40 @@
             border-radius: 12px;
             transition: scale 600ms ease-in;
             transition: transform 900ms ease-out;
+            position: relative;
+
+            .editBtn {
+                // color: #fc5692;
+                display: none;
+                position: absolute;
+                top: 3px;
+                right: 3px;
+                transition: scale 900ms;
+                transition: transform 600ms;
+                color: #ff7a3c;
+
+                &:hover {
+                    transform: scale(1.3);
+                }
+            }
+
+            .addBtn {
+                display: none;
+                position: absolute;
+                bottom: 3px;
+                right: 3px;
+                transition: scale 900ms;
+                transition: transform 600ms;
+                color: #09ff3e;
+                &:hover {
+                    transform: scale(1.3);
+                }
+            }
 
             .text {
                 display: none;
                 font-weight: 600;
-                max-width: 80%;
+                max-width: 70%;
 
                 &:hover {
                     color: #56fc7a;
@@ -108,11 +141,16 @@
                 cursor: pointer;
                 transform: scale(1.1);
 
-                .itemBg {
-                    translate: translateX(-50px);
+                .text {
+                    display: block;
                 }
 
-                .text {
+                .editBtn {
+                    display: block;
+                    
+                }
+
+                .addBtn {
                     display: block;
                 }
             }

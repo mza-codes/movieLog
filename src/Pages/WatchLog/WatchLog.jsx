@@ -2,14 +2,18 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../Components/Header/Header';
 import { DataContext } from '../../Contexts/DataContext';
-import { Button, Popover, Badge } from '@mui/material';
+import { Button, Popover, Badge, Tooltip, IconButton } from '@mui/material';
 import './WatchLog.scss';
 import Iconify from '../../Hooks/Iconify';
 import * as _ from 'lodash';
+import EditItem from '../EditItem/EditItem';
 
 function WatchLog() {
     const route = useNavigate();
     const { movieLog } = useContext(DataContext);
+    const [editData, setEditData] = useState({});
+    const [edit, setEdit] = useState(false);
+    // let movieLog = []; // dev testing
     const [watchLog, setWatchLog] = useState([]);
     const [view, setView] = useState(true);
     const [openSort, setOpenSort] = useState(null);
@@ -64,7 +68,7 @@ function WatchLog() {
 
         } else if (isNumber) {
             result = movieLog.filter((data) => {
-                return data.year <= query;
+                return data.year <= query || data.watchedTime.includes(query);
             });
             setWatchLog(result);
             return;
@@ -79,6 +83,10 @@ function WatchLog() {
         };
     };
 
+    const editTitle = (movie) => {
+        console.log('called');
+    };
+
     return (
         <div >
             <Header />
@@ -87,18 +95,17 @@ function WatchLog() {
                     <h2 className='mainHead'>My WatchLog</h2>
                     {!view && <>
                         <p>You have'nt added anything in your movieLog! <br />Please Add Titles to View Here</p>
-                        <button onClick={e => route('/addItem')} className="navigateBtn">Add Title</button> </>}
+                        <button onClick={e => route('/addItem')} className="navigateBtn">Add Title</button>
+                    </>}
                     <p className='error'></p>
-
                 </div>
                 {view && <div className="sortWrapper">
                     <div className="searcher">
                         <input type="text" onChange={e => handleSearch(e.target.value)} placeholder='Search From Titles...' />
-                        <div className='urlBox'>
+                        <Tooltip title="Include Searching in Image URLs"><div className='urlBox'>
                             <input type="checkbox" onChange={e => setUrlSearch(!urlSearch)} />
                             <span>URL</span>
-                        </div>
-                        {/* <button onClick={handleSearch} >Search</button> */}
+                        </div></Tooltip>
                     </div>
                     <Button
                         color="inherit"
@@ -130,15 +137,27 @@ function WatchLog() {
                 </div>}
                 <div>
                     <div className="logContainer">
-
-                        {watchLog?.map((movie) => (
+                        {watchLog.length === 0 && <h1 className='notFoundErr'>Title Not Found! </h1>}
+                        {watchLog?.map((movie, i) => (
                             <div className="itemBg lozad" key={movie.id} style={{ backgroundImage: `url(${movie?.url})` }}>
+                                <div className="editBtn">
+                                    <IconButton sx={{ color: "inherit" }} onClick={e => route(`/editItem/${movie?.id}`)}
+                                    // onClick={e => route(`/editItem/${movie?.id}`)} onClick={e => editTitle(movie)}
+                                    >
+                                        <Iconify icon="bxs:message-rounded-edit" />
+                                    </IconButton>
+                                </div>
                                 <div className='text'>
                                     <h4>{movie?.name}</h4>
                                     <h6>Released: {movie?.year}</h6>
                                     <h5>{movie?.watchedDate}</h5>
                                     <h6>{movie?.watchedTime}</h6>
                                     {!movie?.watchCount === 1 && <Badge badgeContent={movie?.watchCount} color="success" />}
+                                </div>
+                                <div className="addBtn">
+                                    <IconButton sx={{ color: "inherit" }}>
+                                        <Iconify icon="fluent:add-square-multiple-20-filled" />
+                                    </IconButton>
                                 </div>
                             </div>
                         ))}
