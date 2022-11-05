@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { Form, Formik } from 'formik';
 import lozad from 'lozad';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Flip, toast, ToastContainer } from 'react-toastify';
@@ -14,6 +14,7 @@ import { DataContext } from '../../Contexts/DataContext';
 import { db } from '../../firebaseConfig/firebase';
 import CustomField from '../../Hooks/CustomField';
 import Iconify from '../../Hooks/Iconify';
+import { dateOptions } from '../../Utils/TimeFormats';
 import './EditItem.scss';
 
 const EditItem = () => {
@@ -49,12 +50,19 @@ const EditItem = () => {
     const [searchResult, setSearchResult] = useState([]);
     const [bg, setBg] = useState(null);
     const status = document.querySelector('.showSuccess');
+    console.log('Component re Rendered');
 
     let value = [];
     value = movieLog?.filter((data) => {
         return data.id === itemId
     });
-    
+
+    const editValues = {
+        name: value[0]?.name,
+        year: value[0]?.year,
+        url: value[0]?.url,
+        watchDate: value[0]?.id,
+    };
     // Validations
     const regExURL = /^((https?|ftp):\/\/)?(www.)?(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i
 
@@ -73,6 +81,11 @@ const EditItem = () => {
     // Movie title validation -- exact match
     const isValidIMDBMovie = async (query, year) => {
         if (previousSubmit.query === query && previousSubmit.year === year) return previousSubmit.queryStatus;
+        setPreviousSubmit((current) => ({
+            ...current,
+            query: query,
+            year: year
+        }));
         try {
             // // IMDB SEARCH CALL
             let imdbRes = await axios.get(`https://imdb-api.com/en/API/SearchMovie/${IMDB_API}/${query}%20${year}`);
@@ -147,7 +160,11 @@ const EditItem = () => {
 
     // Image Validation more Reliable 
     const validateImage = url => {
-        if (previousSubmit.image === url) { setImg(url); return previousSubmit.imageStatus; }
+        if (previousSubmit.image === url) { setImg(url); return previousSubmit.imageStatus; };
+        setPreviousSubmit((current) => ({
+            ...current,
+            image: url,
+        }));
         return new Promise((resolve, reject) => {
             const validImg = new Image()
             // the following handler will fire after a successful loading of the image
@@ -187,44 +204,37 @@ const EditItem = () => {
             // loads image
             validImg.src = url;
         })
-    }
+    };
+
+    // Check if Objects are same Simple
+    function isEqualObjects(obj1, obj2) {
+        console.log(obj1, obj2);
+        return JSON.stringify(obj1) === JSON.stringify(obj2)
+    };
 
     const handleSubmit = async (values, actions) => {
-        console.log('handleSubmit CALLED');
+        console.log('handleSubmit CALLED', values);
+        let nowDate = new Date().toLocaleString("en-IN", dateOptions);
+        console.log(nowDate);
         const { name, year, url, watchDate } = values;
         setLoading(true);
         setImgErr("");
         status.innerText = "";
         setErrors({ messageTitle: "" });
         setImg(null);
-        setPreviousSubmit((current) => ({
-            ...current,
-            query: values.name,
-            image: values.url,
-            year: values.year
-        }));
-        // Verifying Duplicate in DB
-        if (watchData.length !== 0) {
-            console.log('FILTERING');
-            const exist = await watchData.filter((movie) => {
-                return (movie?.name?.toLowerCase() === name.toLowerCase() &&
-                    movie?.year === year) || movie?.url === url || movie?.id === watchDate;
-            });
-            if (exist?.length !== 0) {
-                // case
-                console.log('Duplicate found !');
-                setWarn((current) => ({
-                    ...current,
-                    img: true,
-                    title: true
-                }));
-                setErrors({ messageTitle: "Similar title/url/id found in your WatchData, Duplicate Entries Not Allowed !" });
-                setImg(url);
-                setImgErr("Please Verify Before Submit !");
-                setLoading(false);
-                return false;
-            };
+
+        // Check if Current form is Modified
+        let isSame = isEqualObjects(editValues, values);
+        console.log('isSame', isSame);
+        if (isSame) {
+            setLoading(false);
+            setErrors({ messageTitle: "Current Values Already Exist in user WatchData !" });
+            setImgErr("Please set values that are to be Changed !");
+            setImg(url);
+            return false;
         };
+
+        // Verifying Duplicate in DB 
 
         // Validate Movie title  //
         const validMovie = await isValidIMDBMovie(values.name, values.year);
@@ -255,9 +265,11 @@ const EditItem = () => {
 
         // Set Data to Payload
         const [watchedDate, watchedTime] = values.watchDate.split('T');
-        let createdAt = new Date().toLocaleString();
+        let updatedAt = new Date().toLocaleString("en-IN", dateOptions);
         setData({
-            id: watchDate, name, year, url, watchedDate, watchedTime, watchCount: 1, createdAt
+            id: watchDate, name, year, url, watchedDate, watchedTime, watchCount: 1,
+            createdAt: value[0]?.createdAt || updatedAt,
+            updatedAt
         });
 
         if (isValidImg && validMovie) {
@@ -271,35 +283,76 @@ const EditItem = () => {
     };
 
     const handleConfirm = async () => {
-
         status.style.color = "#eeff00";
         status.innerText = "Submitting Data..."
         setLoading(true);
         console.log(data);
+        if (watchData.length !== 0) {
+            const exist = watchData.filter((movie) => {
+                return movie?.name?.toLowerCase() === data.name.toLowerCase() &&
+                    movie?.year === data.year && movie?.url === data.url && movie?.id === data.watchDate;
+            });
+            console.log('FILTERING', exist);
+            if (exist?.length !== 0) {
+                // case
+                console.log('Duplicate found !');
+                setWarn((current) => ({
+                    ...current,
+                    img: true,
+                    title: true
+                }));
+                setErrors({ messageTitle: "Similar item found in your WatchData, Please avoid duplicate entries !" });
+                setImg(data.url);
+                setImgErr("Please Verify your data Before Submit !");
+                setLoading(false);
+                return false;
+            };
+        };
         try {
             await updateDoc(doc(db, 'webusers', user.uid), {
-                watchData: arrayUnion(data)
-            }).then((resp) => {
-                console.log('addedData', resp);
-                setLoading(false);
-                // setImgErr("Data Upload Completed !");
-                status.style.color = "#00ff6a";
-                status.innerText = "Data Added Successfully !";
-                setWatchData((current) => ([...current, data]));
-                setShowConfirm(false);
-                toast.success("Title Added Successfully !", {
-                    position: toast.POSITION.TOP_CENTER,
-                    autoClose: 5200,
-                    hideProgressBar: true
+                watchData: arrayRemove(value[0])
+            }).then(async (resp) => {
+                console.log('Removed Data', resp);
+                await updateDoc(doc(db, 'webusers', user.uid), {
+                    watchData: arrayUnion(data)
+                }).then((res) => {
+                    console.log('addedData', res);
+                    setLoading(false);
+                    status.style.color = "#00ff6a";
+                    status.innerText = "Data Added Successfully !";
+                    const filtered = watchData.filter((data) => {
+                        return data.id !== itemId
+                    });
+                    filtered.push(data);
+                    setWatchData(filtered);
+                    // setWatchData((current) => ([...current, data]));
+                    setShowConfirm(false);
+                    toast.success("Title Added Successfully !", {
+                        position: toast.POSITION.TOP_CENTER,
+                        autoClose: 5200,
+                        hideProgressBar: true
+                    });
+                    setTimeout(() => {
+                        setMovieLog(filtered)
+                        // setMovieLog((current) => ([...current, data]));
+                        route('/');
+                    }, 5000);
+                }).catch(e => {
+                    console.log(e);
+                    setLoading(false);
+                    setImgErr(e?.message);
                 });
-                setTimeout(() => {
-                    setMovieLog((current) => ([...current, data]));
-                    route('/');
-                }, 5000);
-            }).catch(e => console.log('PromiseErr', e));
+
+            }).catch(e => {
+                console.log('PromiseErr', e);
+                setLoading(false);
+                setImgErr(e?.message);
+            });
 
         } catch (e) {
             console.log("Error Occured While Data Submission", e);
+            setLoading(false);
+            setImgErr(e?.message);
         }
     };
 
@@ -309,6 +362,9 @@ const EditItem = () => {
     });
 
     useEffect(() => {
+        // Locale Time testing
+        let dt = new Date().toLocaleString("en-IN", dateOptions);
+        console.log(dt);
         // Loads User WatchData
         const fetchUserData = async () => {
             if (movieLog.length !== 0) {
@@ -346,13 +402,6 @@ const EditItem = () => {
             });
             return true;
         };
-    };
-
-    const editValues = {
-        name: value[0]?.name,
-        year: value[0]?.year,
-        url: value[0]?.url,
-        watchDate: value[0]?.id,
     };
 
     return (
@@ -402,7 +451,8 @@ const EditItem = () => {
                                     <span className='pointer' onClick={e => { handleCopy(movie, "title") }}>
                                         <b>{movie?.title?.slice(0, 20) || movie?.original_title?.slice(0, 20)}</b>
                                     </span>
-                                    <span>{movie?.resultType || "" + " " + movie?.release_date || movie?.description?.slice(0, 14) || ""}</span>
+                                    <span>{(movie?.resultType || "") + " " + (movie?.release_date
+                                        || movie?.description?.slice(0, 14) || "")}</span>
                                     <span className='icon'> <a href={`https://imdb.com/title/${movie?.id}`} target='_blank'
                                         rel='noreferrer'>
                                         <Iconify icon='fontisto:imdb' color='#DBA506' borderRadius={1}
@@ -426,7 +476,8 @@ const EditItem = () => {
                                     <span className='pointer' onClick={e => { handleCopy(movie, "title") }}>
                                         <b>{movie?.title?.slice(0, 20) || movie?.original_title?.slice(0, 20)}</b>
                                     </span>
-                                    <span>{movie?.resultType || "" + " " + movie?.release_date || movie?.description?.slice(0, 14) || ""}</span>
+                                    <span>{(movie?.resultType || "") + " " + (movie?.release_date
+                                        || movie?.description?.slice(0, 14) || "")}</span>
                                     <span className='icon'> <a href={`https://imdb.com/title/${movie?.id}`} target='_blank'
                                         rel='noreferrer'>
                                         <Iconify icon='fontisto:imdb' color='#DBA506' borderRadius={1}

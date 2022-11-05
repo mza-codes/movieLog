@@ -15,6 +15,15 @@ export default function App() {
 
   console.log('myLog', movieLog);
 
+  const fetchUserData = async (user) => {
+    await getDoc(doc(db, 'webusers', user?.uid)).then((res) => {
+      const value = res?.data();
+      setMovieLog(value?.watchData || []);
+      console.log('FETCHED DATA FROM FIRESTORE');
+      return true;
+    });
+  };
+
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       setUser(user);
@@ -27,15 +36,6 @@ export default function App() {
     };
 
   }, []);
-
-  const fetchUserData = async (user) => {
-    await getDoc(doc(db, 'webusers', user?.uid)).then((res) => {
-      const value = res?.data();
-      setMovieLog(value?.watchData);
-      console.log('FETCHED DATA FROM FIRESTORE');
-      return true;
-    });
-  };
 
   return (
     <BrowserRouter>
