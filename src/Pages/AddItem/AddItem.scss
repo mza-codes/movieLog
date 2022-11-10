@@ -25,6 +25,22 @@
         justify-content: center;
     }
 
+    label {
+        margin: 6px 0px;
+        background: linear-gradient(0.10turn, #d0ff00, #ff8800);
+        padding: 6px;
+        border-radius: 4px 14px 4px 14px;
+        transition: all 900ms;
+        color: #000;
+        font-weight: 600;
+
+        &:hover {
+            background: linear-gradient(0.90turn, #d0ff00, #ff8800);
+            border-radius: 14px 4px 14px 4px;
+
+        }
+    }
+
     button {
         margin-top: 5px;
         // font-family: 'Public Sans';
@@ -113,9 +129,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    gap: 10px;
     text-align: center;
-    height: 100%;
+    height: auto;
 
     img {
         object-fit: cover;
@@ -123,16 +139,21 @@
         max-height: 300px;
         width: 100%;
         height: 100%;
-        margin-top: 20px;
+        margin-top: 10px;
         border-radius: 10px;
-        margin-top: -100px;
+    }
+
+    .uploadedInfo {
+        p {
+            cursor: pointer;
+        }
     }
 }
 
 @media (max-width: 768px) {
     .imgPreview {
         img {
-            margin-top: 20px ;
+            margin-top: 20px;
             max-width: 90vw;
             width: 100%;
             height: 100%;
@@ -161,20 +182,22 @@
         display: none;
     }
 
-    .resBtns{
+    .resBtns {
         width: 100%;
         margin: 14px 50px;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         gap: 10px;
-        button{
+
+        button {
             border: none;
             font-weight: 500;
             background: transparent;
             color: rgba($color: #fff, $alpha: 0.4) !important;
             color: #000;
-            &:hover{
+
+            &:hover {
                 color: rgba($color: #fff, $alpha: 0.8) !important;
             }
         }

@@ -6,9 +6,8 @@ import { Button, Popover, Badge, Tooltip, IconButton } from '@mui/material';
 import './WatchLog.scss';
 import Iconify from '../../Hooks/Iconify';
 import * as _ from 'lodash';
-import EditItem from '../EditItem/EditItem';
 import { dateOptions } from '../../Utils/TimeFormats';
-import { arrayRemove, arrayUnion, doc, FieldValue, increment, updateDoc } from 'firebase/firestore';
+import { arrayRemove, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig/firebase';
 import { AuthContex } from '../../Contexts/AuthContext';
 
@@ -33,6 +32,7 @@ function WatchLog() {
         setWatchLog(_.sortBy(movieLog, 'name').reverse());
     }, []);
 
+    // Updating Watchcount As data stored as array needs to remove array, then add new one with updated values
     const myFunction = async () => {
         // const myLog = movieLog?.map((movie, i) => {
         //     movie.createdAt = new Date(movie?.createdAt).toLocaleString("en-IN", dateOptions);
@@ -50,7 +50,6 @@ function WatchLog() {
     useEffect(() => {
         setData();
         console.log(movieLog);
-        // myFunction();
         if (movieLog?.length <= 0) {
             setView(false);
         };
