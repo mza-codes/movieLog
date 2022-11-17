@@ -6,7 +6,6 @@ import { Button, Popover, Badge, Tooltip, IconButton } from '@mui/material';
 import './WatchLog.scss';
 import Iconify from '../../Hooks/Iconify';
 import * as _ from 'lodash';
-import { dateOptions } from '../../Utils/TimeFormats';
 import { arrayRemove, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig/firebase';
 import { AuthContex } from '../../Contexts/AuthContext';
@@ -16,9 +15,7 @@ function WatchLog() {
     const { user } = useContext(AuthContex);
     const [watchCount, setWatchCount] = useState(0);
     const { movieLog } = useContext(DataContext);
-    const [editData, setEditData] = useState({});
     const [reverse, setReverse] = useState(true);
-    const [edit, setEdit] = useState(false);
     // let movieLog = []; // dev testing
     const [watchLog, setWatchLog] = useState([]);
     const [view, setView] = useState(true);
