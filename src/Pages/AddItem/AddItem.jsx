@@ -2,7 +2,7 @@ import axios from 'axios';
 import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { Form, Formik } from 'formik';
 import lozad from 'lozad';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Flip, toast, ToastContainer } from 'react-toastify';
@@ -14,6 +14,7 @@ import { DataContext } from '../../Contexts/DataContext';
 import { db } from '../../firebaseConfig/firebase';
 import CustomField from '../../Hooks/CustomField';
 import Iconify from '../../Hooks/Iconify';
+import { dateOptions } from '../../Utils/TimeFormats';
 import './AddItem.scss';
 
 const AddItem = () => {
@@ -46,6 +47,13 @@ const AddItem = () => {
     const maxDate = new Date().toLocaleString();
     const [searchResult, setSearchResult] = useState([]);
     const [bg, setBg] = useState(null);
+    const [imgDetails, setImgDetails] = useState({
+        file: null,
+        modified: "",
+        lastModified: "",
+        type: ""
+    });
+    const uploadedImage = useRef();
     const status = document.querySelector('.showSuccess');
 
     // Validations
@@ -185,6 +193,7 @@ const AddItem = () => {
     // Handling Form Submit and Extra Validations
     const handleSubmit = async (values, actions) => {
         console.log('handleSubmit CALLED');
+        setImgDetails({ file: null });
         const { name, year, url, watchDate } = values;
         setLoading(true);
         setImgErr("");
@@ -322,23 +331,42 @@ const AddItem = () => {
     }, []);
 
     const handleCopy = (movie, param) => {
+        const toastOptions = {
+            position: toast.POSITION.TOP_CENTER,
+            hideProgressBar: true,
+            autoClose: 2000
+        };
+
         if (param === "image") {
             navigator.clipboard.writeText(movie?.image || w500 + movie?.poster_path ||
                 w500 + movie?.backdrop_path || "null");
-            toast.info("Image URL Copied to clipboard !", {
-                position: toast.POSITION.TOP_CENTER,
-                hideProgressBar: true,
-                autoClose: 2000
-            });
+            toast.info("Image URL Copied to clipboard !", toastOptions);
+            return true;
+        } else if (param === "uploaded") {
+            navigator.clipboard.writeText(movie);
+            toast.success("Date Copied To Clipboard", toastOptions);
             return true;
         } else {
             navigator.clipboard.writeText(movie?.title || movie?.original_title || "null");
-            toast.info("Title Copied to clipboard !", {
-                position: toast.POSITION.TOP_CENTER,
-                hideProgressBar: true,
-                autoClose: 2000
-            });
+            toast.info("Title Copied to clipboard !", toastOptions);
             return true;
+        };
+    };
+
+    const handleChange = (e) => {
+        let blob = uploadedImage?.current?.files[0];
+        setImg(URL.createObjectURL(blob));
+        console.log("logging ref useEffect", blob);
+        const myDate = new Date(blob?.lastModified).toLocaleString(dateOptions);
+        const myDate2 = new Date(blob?.lastModifiedDate).toLocaleString(dateOptions);
+        console.log(myDate, ">|<", myDate2);
+        if (blob !== undefined || null) {
+            setImgDetails({
+                file: uploadedImage?.current?.files[0],
+                modified: myDate,
+                lastModified: myDate2,
+                type: uploadedImage?.current?.files[0]?.type
+            });
         };
     };
 
@@ -348,7 +376,7 @@ const AddItem = () => {
             <ToastContainer transition={Flip} theme={"colored"} />
             <div className="container-fluid addItemBg lozad" style={{ background: `url(${bg ? bg : "https://picsum.photos/1920/1080"})` }}>
                 <div className="row pt-5">
-                    <div className="col-12 col-md-6">
+                    <div className="col-12 col-md-6 col-lg-4">
                         <div className="addData">
                             <h4 className='mainTitle'>Input Data</h4>
                             <Formik onSubmit={handleSubmit} initialValues={{ name: '', year: '', url: '', watchDate: '', lov: "" }}
@@ -367,6 +395,9 @@ const AddItem = () => {
                                         <span className="err">{err?.messageTitle}</span>
                                         <span className="err showSuccess">{imgErr}</span>
                                         {!loading && <button type='submit'>Submit</button>}
+                                        <label htmlFor="uploadFile">Upload Image</label>
+                                        <input ref={uploadedImage} type="file" id='uploadFile' accept='image/*' hidden
+                                            onChange={(e) => { handleChange(e); }} />
                                     </Form>
                                 )}
                             </Formik>
@@ -376,7 +407,7 @@ const AddItem = () => {
                                 Confirm <Iconify icon='charm:shield-tick' /> </button>
                         </div>}
                     </div>
-                    <div className="col-12 col-md-6">
+                    <div className="col-12 col-md-6 col-lg-4">
                         {searchResult?.length !== 0 && suggestions?.length === 0 &&
                             <h4 style={{ margin: '15px 0px', textAlign: 'center' }}>Search Result</h4>}
                         <div className="suggestionsContainer">
@@ -442,9 +473,21 @@ const AddItem = () => {
                             </div>}
                         </div>
                     </div>
-                    <div className="col-12 col-md-6">
+                    <div className="col-12 col-md-6 col-lg-4">
                         <div className="imgPreview">
                             {img && <img className='lozad' src={img} alt="_preview" />}
+                            <div className="uploadedInfo">
+                                {imgDetails?.file && <>
+                                    <h6>Uploaded Image Details</h6>
+                                    <p onClick={e => handleCopy(imgDetails?.modified, "uploaded")}>
+                                        Modified Date: <b>{imgDetails?.modified}</b>
+                                    </p>
+                                    <p>Type: <b>{imgDetails?.type}</b></p>
+                                    <p onClick={e => handleCopy(imgDetails?.lastModified, "uploaded")}>
+                                        LastModified: <b>{imgDetails?.lastModified}</b>
+                                    </p>
+                                </>}
+                            </div>
                         </div>
                     </div>
                 </div>
