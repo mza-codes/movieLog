@@ -17,7 +17,7 @@ const Header = () => {
     const { user } = useContext(AuthContex);
     const [menuPop, setMenuPop] = useState(null);
     const [notifyPopUp, setNotifyPopUp] = useState(null);
-    let currentRoute = window.location.pathname;
+    const currentRoute = window.location.pathname;
     const openSearch = Boolean(anchorEl);
     const openMenu = Boolean(menuPop);
     const openNotify = Boolean(notifyPopUp);
