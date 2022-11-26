@@ -14,8 +14,6 @@
     position: relative;
     width: 100%;
 
-    transition: all 900ms;
-
     .left {
         flex: 1;
     }
@@ -39,6 +37,7 @@
     }
 
     .right {
+        transition: all 900ms;
         display: flex;
         flex-direction: row;
         gap: 5px;
