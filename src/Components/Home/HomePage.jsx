@@ -7,39 +7,18 @@ import lozad from 'lozad';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-function HomePage({ list, num }) {
-    const elRef = useRef()
-    const [b, setB] = useState(num);
+function HomePage({ list }) {
+    const [b, setB] = useState(4);
     const [movie, setMovie] = useState();
+    const observer = lozad();
 
     useEffect(() => {
-        const observer = lozad();
         observer.observe()
     });
 
     useEffect(() => {
         setMovie(list[b]);
     }, [b]);
-
-    const scrollHoriz = () => {
-        const el = elRef.current;
-        if (el) {
-            const onWheel = e => {
-                if (e.deltaY === 0) return;
-                e.preventDefault();
-                el.scrollTo({
-                    left: el.scrollLeft + e.deltaY,
-                    behavior: "smooth"
-                });
-            };
-            el.addEventListener("wheel", onWheel);
-            return () => el.removeEventListener("wheel", onWheel);
-        }
-    };
-
-    // useEffect(() => {
-    //     scrollHoriz();
-    // }, []);
 
     const notify = () => {
         toast("Default Notification !");

@@ -12,6 +12,7 @@ import EmailLinkLogin from "./Pages/EmailLinkLogin/EmailLinkLogin";
 import AddItem from "./Pages/AddItem/AddItem";
 import WatchLog from "./Pages/WatchLog/WatchLog";
 import EditItem from "./Pages/EditItem/EditItem";
+import HomePage2 from "./Pages/Home2/HomePage2";
 
 export default function Router() {
     const { user } = useContext(AuthContex);
@@ -40,7 +41,7 @@ export default function Router() {
     return useRoutes([
         {
             path: '/',
-            element: <Home />,
+            element: <HomePage2 />,
             // children: [
             //     { path: 'app', element: <DashboardApp /> },
             //     { path: 'user', element: usersRoute },

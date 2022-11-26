@@ -10,7 +10,6 @@ export default function Home() {
 
     const [movies, setMovies] = useState([]);
     const [movies2, setMovies2] = useState([]);
-    let num = 6;
 
     const fetchMovies = (value, key) => {
         return new Promise(async (resolve, reject) => {
@@ -34,8 +33,8 @@ export default function Home() {
                     resolve(results)
                 })
                 .catch(err => { console.log('Home.jsx ERROR OCCURED', err); reject(err) })
-        })
-    }
+        });
+    };
 
     const fetchData = async () => {
         const orig = 'orig'
@@ -44,26 +43,16 @@ export default function Home() {
         const top = 'top'
         const dat = await fetchMovies(trending2, top)
         setMovies2(dat)
-    }
+    };
 
     useEffect(() => {
-        const data = JSON.parse(sessionStorage.getItem('orig'))
-        const dat = JSON.parse(sessionStorage.getItem('top'))
-        if (data !== null) {
-            setMovies(data)
-            num = Math.floor(Math.random() * data?.length);
-        }
-        if (dat !== null) {
-            setMovies2(dat)
-        } else {
-            fetchData()
-        }
-    }, [])
+        fetchData();
+    }, []);
 
     return (
         <div className='App'>
             <Header />
-            <HomePage list={movies ? movies : []} num={num} />
+            <HomePage list={movies ? movies : []} />
             {/* <HomePage list={movies2 ? movies2 : []} /> */}
         </div>
     )
