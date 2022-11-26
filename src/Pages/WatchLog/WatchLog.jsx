@@ -9,14 +9,14 @@ import * as _ from 'lodash';
 import { arrayRemove, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig/firebase';
 import { AuthContex } from '../../Contexts/AuthContext';
+import lozad from 'lozad';
 
 function WatchLog() {
     const route = useNavigate();
+    const observer = lozad();
     const { user } = useContext(AuthContex);
-    const [watchCount, setWatchCount] = useState(0);
     const { movieLog } = useContext(DataContext);
     const [reverse, setReverse] = useState(true);
-    // let movieLog = []; // dev testing
     const [watchLog, setWatchLog] = useState([]);
     const [view, setView] = useState(true);
     const [openSort, setOpenSort] = useState(null);
@@ -59,7 +59,6 @@ function WatchLog() {
         { value: 'createdAt', state: 'priceHigh', label: 'Created At' },
         { value: 'year', state: 'priceHigh', label: 'Release' },
         { value: 'watchedDate', state: 'priceHigh', label: 'Yearly' },
-
     ];
 
     const handleSort = (e, value, action) => {
@@ -71,7 +70,7 @@ function WatchLog() {
     };
 
     const handleSearch = (query) => {
-        let result = []
+        let result = [];
         console.log('searchValue', query);
         const isWord = alpha.test(query);
         const isNumber = regExNumbers.test(query);
@@ -101,19 +100,8 @@ function WatchLog() {
         };
     };
 
-    const addWatchCount = (movie) => {
-        let data = [];
-        movie.watchCount = parseInt(movie.watchCount) + 1;
-        setWatchLog((current) =>
-        ([...current.filter((data) => {
-            return data.id !== movie.id
-        }), movie]));
-        return true;
-    };
-
     const addCount = (movie) => {
         movie.watchCount = parseInt(movie.watchCount) + 1;
-        setWatchCount(movie.watchCount);
         const counter = document.getElementById(movie.id);
         console.log(counter);
         counter.badgeContent = movie.watchCount;
@@ -122,12 +110,14 @@ function WatchLog() {
 
     const minusCount = (movie) => {
         movie.watchCount = parseInt(movie.watchCount) - 1;
-        setWatchCount(movie.watchCount);
         const counter = document.getElementById(movie.id);
-        console.log(counter);
         counter.badgeContent = movie.watchCount;
         return movie;
     };
+
+    useEffect(() => {
+        observer.observe();
+    });
 
     return (
         <div >
@@ -186,9 +176,12 @@ function WatchLog() {
                 </div>}
                 <div>
                     <div className="logContainer">
-                        {watchLog.length === 0 && <h1 className='notFoundErr'>No Titles Found!</h1>}
+                        {watchLog.length === 0 &&
+                            <h1 className='notFoundErr'>No Titles Found!</h1>}
                         {watchLog?.map((movie, i) => (
-                            <div className="itemBg lozad" key={movie.id} style={{ backgroundImage: `url(${movie?.url})` }}>
+                            <div className="itemBg lozad" key={movie.id}
+                                // style={{ backgroundImage: `url(${movie?.url})` }}
+                                data-background-image={movie?.url}>
                                 <div className="editBtn">
                                     <IconButton sx={{ color: "inherit" }} onClick={e => route(`/editItem/${movie?.id}`)}>
                                         <Iconify icon="bxs:message-rounded-edit" />

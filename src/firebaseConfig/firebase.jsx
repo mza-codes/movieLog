@@ -1,10 +1,9 @@
-import { initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
-import { FIREBASE_API_KEY } from '../Constants/Constants';
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-    apiKey: FIREBASE_API_KEY,
+    apiKey: process.env.REACT_APP_FIREBASE_APIKEY,
     authDomain: "movielog-ff455.firebaseapp.com",
     projectId: "movielog-ff455",
     storageBucket: "movielog-ff455.appspot.com",

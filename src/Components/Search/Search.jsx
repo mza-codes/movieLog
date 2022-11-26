@@ -1,30 +1,25 @@
-import { IconButton } from '@mui/material'
 import React from 'react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Iconify from '../../Hooks/Iconify'
 import './search.scss'
 
 function Search({ component }) {
-    const [query, setQuery] = useState('')
-    const [imdb, setImdb] = useState(false)
-    const route = useNavigate()
+    const [query, setQuery] = useState('');
+    const [imdb, setImdb] = useState(false);
+    const route = useNavigate();
 
     const handleSearch = () => {
         if (imdb) {
             console.log('imdb true');
-            route(`/searchv2/${query}`)
-            return
-        }
-        route(`/search/${query}`)
-        return
-    }
+            route(`/searchv2/${query}`);
+            return;
+        };
+        route(`/search/${query}`);
+        return;
+    };
 
     return (
         <>
-            {/* <React.Fragment>
-                <header>
-                    <div className="row"> */}
             <div className="search">
                 <input type="text" onChange={(e) => setQuery(e.target.value)}
                     placeholder='Enter Something to Search for...' />
@@ -41,10 +36,6 @@ function Search({ component }) {
                     {component && component}
                 </div>
             </div>
-
-            {/* </div>
-                </header>
-            </React.Fragment> */}
         </>
     )
 }

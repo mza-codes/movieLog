@@ -251,7 +251,9 @@
 // }
 
 .resBg {
-    background: var(--body-bg);
+    // background: var(--body-bg);
+    background: rgb(66, 66, 66);
+    color: #fff;
     min-height: 93vh;
 }
 

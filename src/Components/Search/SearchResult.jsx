@@ -27,6 +27,7 @@ const StyledRating = styled(Rating)({
 // logo TMDB Iconify 'cib:the-movie-database'
 function SearchResult() {
     const params = useParams();
+    const observer = lozad();
     const query = params.query;
     const [loading, setLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
@@ -52,7 +53,6 @@ function SearchResult() {
     };
 
     useEffect(() => {
-        const observer = lozad();
         observer.observe()
     });
 
@@ -157,10 +157,11 @@ function SearchResult() {
                 {movie && <div className="row movie" >
                     <div className="col-12 col-md-6 poster">
                         <img className='lozad' alt="movie_poster"
-                            src={movie ? w500 + movie?.poster_path || w500 + movie?.backdrop_path : ''} />
+                            data-src={movie ? w500 + movie?.poster_path || w500 + movie?.backdrop_path : ''} />
                     </div>
                     <div className="col-12 col-md-6 content">
-                        <h3 className="misty">{movie?.original_title}</h3>
+                        <h3 className="misty">{movie?.title ||
+                            (movie?.original_title?.length > 20 ? movie?.original_title?.slice(0, 20) : movie?.original_title)}</h3>
                         <h5 className="misty">{movie?.title}</h5>
                         <h4 className="misty">{movie?.overview}</h4>
                         {/* <h5 className="misty">Rating:</h5> */}

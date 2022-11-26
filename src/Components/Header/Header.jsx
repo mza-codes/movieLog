@@ -1,14 +1,13 @@
-import { IconButton, Popover } from '@mui/material'
-import { getIdToken, signOut } from 'firebase/auth'
-import { doc, setDoc, updateDoc } from 'firebase/firestore'
-import { useContext, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { AuthContex } from '../../Contexts/AuthContext'
-import { auth, db } from '../../firebaseConfig/firebase'
-import Iconify from '../../Hooks/Iconify'
-import useResponsive from '../../Hooks/useResponsive'
-import Search from '../Search/Search'
-import './Header.scss'
+import { IconButton, Popover } from '@mui/material';
+import { signOut } from 'firebase/auth';
+import { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContex } from '../../Contexts/AuthContext';
+import { auth } from '../../firebaseConfig/firebase';
+import Iconify from '../../Hooks/Iconify';
+import useResponsive from '../../Hooks/useResponsive';
+import Search from '../Search/Search';
+import './Header.scss';
 
 const Header = () => {
     const route = useNavigate();
@@ -17,7 +16,7 @@ const Header = () => {
     const { user } = useContext(AuthContex);
     const [menuPop, setMenuPop] = useState(null);
     const [notifyPopUp, setNotifyPopUp] = useState(null);
-    let currentRoute = window.location.pathname;
+    const currentRoute = window.location.pathname;
     const openSearch = Boolean(anchorEl);
     const openMenu = Boolean(menuPop);
     const openNotify = Boolean(notifyPopUp);

@@ -1,6 +1,8 @@
 .watchLog {
     min-height: 93vh;
-    background: linear-gradient(to bottom, #fc5692, rgb(255, 78, 78));
+    // background: linear-gradient(to right, #a71148, rgb(156, 21, 21));
+    background: rgb(56, 56, 56);
+    color: #fff;
     // fc5692 fc9652
 
     .mainHead {
@@ -155,20 +157,7 @@
                 cursor: pointer;
                 transform: scale(1.1);
 
-                .text {
-                    display: block;
-                }
-
-                .editBtn {
-                    display: block;
-                    
-                }
-
-                .addBtn {
-                    display: block;
-                }
-
-                .minusBtn{
+                .text,.editBtn ,.addBtn, .minusBtn {
                     display: block;
                 }
             }

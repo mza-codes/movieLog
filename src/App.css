@@ -63,3 +63,11 @@
     font-family: lemosty;
     src: url('/public/fonts/lemosty.otf');
 }
+
+/* Homepage2.jsx */
+@media (480px >= width) {
+    .movieCardSm{
+        max-width: 84% !important;
+        width: 300px !important;
+    }
+}
