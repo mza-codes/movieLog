@@ -1,17 +1,15 @@
 import Header from '../../Components/Header/Header';
 import './HomePage2.scss';
-import data from './data.json';
 import { useEffect, useState } from 'react';
 import lozad from 'lozad';
 import { IMDB_API } from '../../Constants/Constants';
 import axios from 'axios';
 import loadGif from './loader.gif';
-import Loader from '../Loader/Loader';
 import { useNavigate } from 'react-router-dom';
-;
+import data from './data';
+
 const HomePage2 = () => {
     const [movies, setMovies] = useState([]);
-    const [loading, setLoading] = useState(true);
     const route = useNavigate();
     const observer = lozad();
     const values = ["MostPopularTVs", "BoxOfficeAllTime", "Top250TVs", "Top250Movies", "MostPopularMovies"];
@@ -36,24 +34,20 @@ const HomePage2 = () => {
     };
 
     useEffect(() => {
-        setMovies(data?.slice(0, 100));
+        setMovies(data?.slice(700, 760));
         // getData();
-        setTimeout(() => {
-            setLoading(false);
-        }, 4000);
     }, []);
 
     useEffect(() => {
         observer.observe();
     });
 
-    if (loading) return (<Loader page />)
-
     return (
         <>
             <Header />
             <main className='mainPage'>
                 <section className="moviesWrapper">
+                    {/* {data?.length >= 1 && data?.map((movie, i) => ( */}
                     {movies?.map((movie, i) => (
                         <div className="movieCardSm" key={i} onClick={e => route(`/movie/${movie.id}`)}>
                             <img src={loadGif} className='lozad' data-src={movie?.image} alt={movie?.id} />
