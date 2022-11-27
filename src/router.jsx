@@ -1,10 +1,10 @@
 import { Navigate, useRoutes } from "react-router-dom";
-import Home from "./Components/Home/Home";
+// import Home from "./Components/Home/Home";
 import SearchResult from "./Components/Search/SearchResult";
 import SearchResultIMDB from "./Components/Search/SearchResultIMDB";
 import { Login } from './Components/Auth/Login';
 import { Register } from './Components/Auth/Register';
-import { useContext } from "react";
+import { lazy, Suspense, useContext } from "react";
 import { AuthContex } from "./Contexts/AuthContext";
 import ErrorLogo from "./Constants/Error/ErrorLogo";
 import Profile from "./Pages/Profile/Profile";
@@ -13,6 +13,9 @@ import AddItem from "./Pages/AddItem/AddItem";
 import WatchLog from "./Pages/WatchLog/WatchLog";
 import EditItem from "./Pages/EditItem/EditItem";
 import HomePage2 from "./Pages/Home2/HomePage2";
+import Loader from "./Pages/Loader/Loader";
+
+const ViewPage = lazy(() => import("./Pages/ViewPage/ViewPage"));
 
 export default function Router() {
     const { user } = useContext(AuthContex);
@@ -35,8 +38,6 @@ export default function Router() {
             return children;
         }
     };
-
-
 
     return useRoutes([
         {
@@ -64,6 +65,7 @@ export default function Router() {
         { path: 'emailLinkLogin', element: <Protected user={user}> <EmailLinkLogin /> </Protected> },
         { path: 'watchLog', element: watchLogRoute },
         { path: 'editItem/:id', element: <UserRoute user={user}> <EditItem /> </UserRoute> },
+        { path: 'movie/:id', element: <Suspense fallback={<Loader page />}> <ViewPage /> </Suspense> },
         // emailLinkLogin
 
         // {

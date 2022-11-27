@@ -1,6 +1,6 @@
 {
-  "short_name": "movieLogs",
-  "name": "movieLogs Web App",
+  "short_name": "movieLog",
+  "name": "movieLog Web App",
   "icons": [],
   "start_url": ".",
   "display": "standalone",
