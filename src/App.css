@@ -19,13 +19,12 @@
     --body-bg: #fc9652;
     --footer-bg: #fc9652;
 }
+
 .light {
     --header-bg: #fc9652;
     --body-bg: #fc9652;
     --footer-bg: #fc9652;
 }
-
-/* ------------------ */
 
 .blackText {
     color: black !important;
@@ -65,9 +64,23 @@
 }
 
 /* Homepage2.jsx */
-@media (480px >= width) {
-    .movieCardSm{
+@media (480px >=width) {
+    .movieCardSm {
         max-width: 84% !important;
         width: 300px !important;
     }
 }
+
+/* body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+} */

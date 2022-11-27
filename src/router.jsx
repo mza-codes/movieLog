@@ -1,27 +1,24 @@
 import { Navigate, useRoutes } from "react-router-dom";
-// import Home from "./Components/Home/Home";
-import SearchResult from "./Components/Search/SearchResult";
-import SearchResultIMDB from "./Components/Search/SearchResultIMDB";
 import { Login } from './Components/Auth/Login';
 import { Register } from './Components/Auth/Register';
 import { lazy, Suspense, useContext } from "react";
 import { AuthContex } from "./Contexts/AuthContext";
-import ErrorLogo from "./Constants/Error/ErrorLogo";
-import Profile from "./Pages/Profile/Profile";
-import EmailLinkLogin from "./Pages/EmailLinkLogin/EmailLinkLogin";
-import AddItem from "./Pages/AddItem/AddItem";
-import WatchLog from "./Pages/WatchLog/WatchLog";
-import EditItem from "./Pages/EditItem/EditItem";
-import HomePage2 from "./Pages/Home2/HomePage2";
 import Loader from "./Pages/Loader/Loader";
+
+const SearchResult = lazy(() => import("./Components/Search/SearchResult"));
+const SearchResultIMDB = lazy(() => import("./Components/Search/SearchResultIMDB"));
+const ErrorLogo = lazy(() => import("./Constants/Error/ErrorLogo"));
+const Profile = lazy(() => import("./Pages/Profile/Profile"));
+const EmailLinkLogin = lazy(() => import("./Pages/EmailLinkLogin/EmailLinkLogin"));
+const AddItem = lazy(() => import("./Pages/AddItem/AddItem"));
+const WatchLog = lazy(() => import("./Pages/WatchLog/WatchLog"));
+const EditItem = lazy(() => import("./Pages/EditItem/EditItem"));
+const HomePage2 = lazy(() => import("./Pages/Home2/HomePage2"));
 
 const ViewPage = lazy(() => import("./Pages/ViewPage/ViewPage"));
 
 export default function Router() {
     const { user } = useContext(AuthContex);
-
-    let watchLogRoute = <Navigate to="/register" replace />;
-    if (user) { watchLogRoute = <WatchLog /> };
 
     const Protected = ({ user, children }) => {
         if (!user) {
@@ -55,17 +52,78 @@ export default function Router() {
             //     // { path: 'editProfile', element: editProfile },
             // ],
         },
-        { path: 'myposts', element: 'element here' },
-        { path: 'search/:query', element: <SearchResult /> },
-        { path: 'searchv2/:query', element: <SearchResultIMDB /> },
-        { path: 'login', element: <Protected user={user}> <Login /> </Protected> },
-        { path: 'register', element: <Protected user={user}> <Register /> </Protected> },
-        { path: 'addItem', element: <UserRoute user={user}> <AddItem /> </UserRoute> },
-        { path: 'profile', element: <UserRoute user={user}> <Profile /> </UserRoute> },
-        { path: 'emailLinkLogin', element: <Protected user={user}> <EmailLinkLogin /> </Protected> },
-        { path: 'watchLog', element: watchLogRoute },
-        { path: 'editItem/:id', element: <UserRoute user={user}> <EditItem /> </UserRoute> },
-        { path: 'movie/:id', element: <Suspense fallback={<Loader page />}> <ViewPage /> </Suspense> },
+        {
+            path: 'search/:query', element:
+                <Suspense fallback={<Loader page />}>
+                    <SearchResult />
+                </Suspense>
+        },
+        {
+            path: 'searchv2/:query', element:
+                <Suspense fallback={<Loader page />}>
+                    <SearchResultIMDB />
+                </Suspense>
+        },
+        {
+            path: 'login', element:
+                <Protected user={user}>
+                    <Suspense fallback={<Loader page />}>
+                        <Login />
+                    </Suspense>
+                </Protected>
+        },
+        {
+            path: 'register', element:
+                <Protected user={user}>
+                    <Suspense fallback={<Loader page />}>
+                        <Register />
+                    </Suspense>
+                </Protected>
+        },
+        {
+            path: 'addItem', element:
+                <UserRoute user={user}>
+                    <Suspense fallback={<Loader page />}>
+                        <AddItem />
+                    </Suspense>
+                </UserRoute>
+        },
+        {
+            path: 'profile', element:
+                <UserRoute user={user}>
+                    <Suspense fallback={<Loader page />}>
+                        <Profile />
+                    </Suspense>
+                </UserRoute>
+        },
+        {
+            path: 'emailLinkLogin', element:
+                <Suspense fallback={<Loader page />}>
+                    <Protected user={user}> <EmailLinkLogin /> </Protected>
+                </Suspense>
+        },
+        {
+            path: 'watchLog', element:
+                <UserRoute user={user}>
+                    <Suspense fallback={<Loader page />}>
+                        <WatchLog />
+                    </Suspense>
+                </UserRoute>
+        },
+        {
+            path: 'editItem/:id', element:
+                <UserRoute user={user}>
+                    <Suspense fallback={<Loader page />}>
+                        <EditItem />
+                    </Suspense>
+                </UserRoute>
+        },
+        {
+            path: 'movie/:id', element:
+                <Suspense fallback={<Loader page />}>
+                    <ViewPage />
+                </Suspense>
+        },
         // emailLinkLogin
 
         // {
