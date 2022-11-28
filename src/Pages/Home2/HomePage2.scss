@@ -1,7 +1,8 @@
 .mainPage {
     min-height: 93vh;
     width: 100%;
-    background: #ccc;
+    // background: #ccc;
+    background: linear-gradient(var(--brand1),var(--brand2));
     color: #fff;
     position: relative;
     transition: all 990ms;
@@ -36,6 +37,24 @@
                     opacity: 0.8;
                 }
             }
+        }
+    }
+
+    .button{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 10px;
+        button{
+            padding: 4px 14px;
+            border-radius: 8px;
+            background: rgba($color: #fff, $alpha: 0.6);
+            &:hover{
+                background: rgba($color: #111, $alpha: 0.6);
+                color: #fff;
+            }
+
         }
     }
 }

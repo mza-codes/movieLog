@@ -12,7 +12,7 @@ const EmailLinkLogin = () => {
 
     const route = useNavigate();
     const [errors, setErrors] = useState();
-    const {setUser} = useContext(AuthContex);
+    const { setUser } = useContext(AuthContex);
     const monitor = async () => {
         setTimeout(() => {
             const msg = document.getElementById('tooLong');
@@ -26,47 +26,47 @@ const EmailLinkLogin = () => {
         }, 35000);
     };
 
+    // const emailLinkLogin = async () => {
+    //     if (isSignInWithEmailLink(auth, window.location.href)) {
+    //         let email = window.localStorage.getItem('emailForSignIn');
+    //         if (!email) {
+    //             email = window.prompt('Please provide your email for confirmation');
+    //         };
+    //         signInWithEmailLink(auth, email, window.location.href)
+    //             .then(async (result) => {
+    //                 window.localStorage.removeItem('emailForSignIn');
+    //                 console.log(result);
+    //                 console.log('FETCHED USER', result.user);
+    //                 setUser(result.user);
+    //                 const snap = await getDoc(doc(db, 'webusers', result.user.uid))
+    //                 if (snap.exists()) {
+    //                     console.log('DATA EXISTS');
+    //                     route('/');
+    //                 } else {
+    //                     setDoc(doc(db, "webusers", result.user.uid), {
+    //                         userName: "",
+    //                         email: result?.user?.email,
+    //                         emailVerified: result?.user?.emailVerified,
+    //                         joinDate: result?.user?.metadata?.creationTime,
+    //                         joinedTime: result?.user?.metadata?.createdAt,
+    //                         ownerId: result?.user?.uid,
+    //                         watchData: []
+    //                     });
+    //                     console.log('ADDED DATA');
+    //                     route('/');
+    //                 }
+    //             })
+    //             .catch((error) => {
+    //                 console.log(error);
+    //                 setErrors(error);
+    //             });
+    //     };
+    // };
+
     useEffect(() => {
-        emailLinkLogin();
+        // emailLinkLogin();
         monitor();
     }, []);
-
-    const emailLinkLogin = async () => {
-        if (isSignInWithEmailLink(auth, window.location.href)) {
-            let email = window.localStorage.getItem('emailForSignIn');
-            if (!email) {
-                email = window.prompt('Please provide your email for confirmation');
-            }
-            signInWithEmailLink(auth, email, window.location.href)
-                .then(async (result) => {
-                    window.localStorage.removeItem('emailForSignIn');
-                    console.log(result);
-                    console.log('FETCHED USER', result.user);
-                    setUser(result.user);
-                    const snap = await getDoc(doc(db, 'webusers', result.user.uid))
-                    if (snap.exists()) {
-                        console.log('DATA EXISTS');
-                        route('/');
-                    } else {
-                        setDoc(doc(db, "webusers", result.user.uid), {
-                            userName: "",
-                            email: result?.user?.email,
-                            emailVerified: result?.user?.emailVerified,
-                            joinDate: result?.user?.metadata?.creationTime,
-                            joinedTime: result?.user?.metadata?.createdAt,
-                            ownerId: result?.user?.uid,
-                            watchData: []
-                        });
-                        console.log('ADDED DATA');
-                        route('/');
-                    }
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setErrors(error);
-                });
-        }
-    }
 
     return (
         <>

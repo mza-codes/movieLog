@@ -39,7 +39,10 @@ export default function Router() {
     return useRoutes([
         {
             path: '/',
-            element: <HomePage2 />,
+            element:
+                <Suspense fallback={<Loader page />}>
+                    <HomePage2 />
+                </Suspense>,
             // children: [
             //     { path: 'app', element: <DashboardApp /> },
             //     { path: 'user', element: usersRoute },

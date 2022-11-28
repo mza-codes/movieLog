@@ -29,6 +29,6 @@
     background-clip:text; /* added by css suggestion */
     -webkit-text-fill-color: transparent;
 
-    /* removes tesxt cursor */
+    /* removes text cursor */
     pointer-events: none;
 }
