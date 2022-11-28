@@ -9,11 +9,10 @@ const SearchResult = lazy(() => import("./Components/Search/SearchResult"));
 const SearchResultIMDB = lazy(() => import("./Components/Search/SearchResultIMDB"));
 const ErrorLogo = lazy(() => import("./Constants/Error/ErrorLogo"));
 const Profile = lazy(() => import("./Pages/Profile/Profile"));
-const EmailLinkLogin = lazy(() => import("./Pages/EmailLinkLogin/EmailLinkLogin"));
 const AddItem = lazy(() => import("./Pages/AddItem/AddItem"));
 const WatchLog = lazy(() => import("./Pages/WatchLog/WatchLog"));
 const EditItem = lazy(() => import("./Pages/EditItem/EditItem"));
-const HomePage2 = lazy(() => import("./Pages/Home2/HomePage2"));
+const HomePage2 = lazy(() => import("./Pages/Home/HomePage"));
 
 const ViewPage = lazy(() => import("./Pages/ViewPage/ViewPage"));
 
@@ -98,12 +97,6 @@ export default function Router() {
                         <Profile />
                     </Suspense>
                 </UserRoute>
-        },
-        {
-            path: 'emailLinkLogin', element:
-                <Suspense fallback={<Loader page />}>
-                    <Protected user={user}> <EmailLinkLogin /> </Protected>
-                </Suspense>
         },
         {
             path: 'watchLog', element:

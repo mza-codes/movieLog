@@ -1,5 +1,5 @@
 import Header from '../../Components/Header/Header';
-import './HomePage2.scss';
+import './HomePage.scss';
 import { useContext, useEffect, useState } from 'react';
 import lozad from 'lozad';
 import { IMDB_API } from '../../Constants/Constants';
@@ -7,6 +7,7 @@ import axios from 'axios';
 import loadGif from './loader.gif';
 import { useNavigate } from 'react-router-dom';
 import data from './data';
+import bg from './bg2.jpg';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import { AuthContex } from '../../Contexts/AuthContext';
@@ -14,7 +15,7 @@ import { isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
 import { auth, db } from '../../firebaseConfig/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
-const HomePage2 = () => {
+const Home = () => {
     const [movies, setMovies] = useState([]);
     const { setUser } = useContext(AuthContex);
     const route = useNavigate();
@@ -40,10 +41,9 @@ const HomePage2 = () => {
         return true;
     };
 
-    const getMore = () => {
-        console.log("Getmore data on homescreen");
-        setMovies((curr) => ([...data?.slice(725, 800), ...curr]));
-        return true;
+    const getItems = () => {
+        setMovies(data.slice(700,742));
+        return;
     };
 
     const emailLinkLogin = async () => {
@@ -78,10 +78,10 @@ const HomePage2 = () => {
                         return true;
                     };
                 }).catch((error) => {
-                    console.log("Error occured in Signinwith email link",error);
+                    console.log("Error occured in Signinwith email link", error);
                     return;
                 });
-        }else{
+        } else {
             console.log("Normal");
             return true;
         };
@@ -89,8 +89,6 @@ const HomePage2 = () => {
 
     useEffect(() => {
         emailLinkLogin();
-        setMovies(data?.slice(700, 724));
-        // getData();
     }, []);
 
     useEffect(() => {
@@ -101,7 +99,7 @@ const HomePage2 = () => {
         <>
             <ToastContainer />
             <Header />
-            <main className='mainPage'>
+            <main className='mainPage' style={{ backgroundImage: `url(${bg})` }}>
                 <section className="moviesWrapper">
                     {/* {data?.length >= 1 && data?.map((movie, i) => ( */}
                     {movies?.map((movie, i) => (
@@ -112,11 +110,11 @@ const HomePage2 = () => {
                     ))}
                 </section>
                 <div className="button">
-                    <button className='fw-bold' onClick={getMore}>MORE</button>
+                <button className='fw-bold' onClick={getItems}>Fetch</button>
                 </div>
             </main>
         </>
     )
 }
 
-export default HomePage2;
+export default Home;

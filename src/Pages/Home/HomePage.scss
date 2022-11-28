@@ -1,8 +1,10 @@
 .mainPage {
     min-height: 93vh;
     width: 100%;
-    // background: #ccc;
-    background: linear-gradient(var(--brand1),var(--brand2));
+    background-position: 10%;
+    background-size: 490px;
+    background-repeat: repeat;
+    box-shadow: inset 0 0 0 100vh rgba(0, 0, 0, 0.34);
     color: #fff;
     position: relative;
     transition: all 990ms;
@@ -30,10 +32,11 @@
 
             img {
                 aspect-ratio: 2/3;
-                // vertical-align: middle;
                 object-fit: cover;
+                background: #000;
 
                 &:hover{
+                    
                     opacity: 0.8;
                 }
             }
@@ -50,6 +53,8 @@
             padding: 4px 14px;
             border-radius: 8px;
             background: rgba($color: #fff, $alpha: 0.6);
+            outline: none;
+            border: none;
             &:hover{
                 background: rgba($color: #111, $alpha: 0.6);
                 color: #fff;
