@@ -55,6 +55,7 @@ const AddItem = () => {
     });
     const uploadedImage = useRef();
     const status = document.querySelector('.showSuccess');
+    const errRef = useRef();
 
     // Validations
     const regExURL = /^((https?|ftp):\/\/)?(www.)?(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i
@@ -197,7 +198,7 @@ const AddItem = () => {
         const { name, year, url, watchDate } = values;
         setLoading(true);
         setImgErr("");
-        status.innerText = "";
+        errRef.current.innerText = "";
         setErrors({ messageTitle: "" });
         setImg(null);
         setPreviousSubmit((current) => ({
@@ -275,8 +276,8 @@ const AddItem = () => {
 
     // Handling Confirm,Upload to Server
     const handleConfirm = async () => {
-        status.style.color = "#eeff00";
-        status.innerText = "Submitting Data..."
+        errRef.current.style.color = "#eeff00";
+        errRef.current.innerText = "Submitting Data..."
         setLoading(true);
         console.log(data);
         try {
@@ -286,8 +287,8 @@ const AddItem = () => {
                 console.log('addedData', resp);
                 setLoading(false);
                 // setImgErr("Data Upload Completed !");
-                status.style.color = "#00ff6a";
-                status.innerText = "Data Added Successfully !";
+                errRef.current.style.color = "#00ff6a";
+                errRef.current.innerText = "Data Added Successfully !";
                 setWatchData((current) => ([...current, data]));
                 setShowConfirm(false);
                 toast.success("Title Added Successfully !", {
@@ -393,7 +394,7 @@ const AddItem = () => {
                                             <div className="loader"></div>
                                         </div>}
                                         <span className="err">{err?.messageTitle}</span>
-                                        <span className="err showSuccess">{imgErr}</span>
+                                        <span ref={errRef} className="err showSuccess">{imgErr}</span>
                                         {!loading && <button type='submit'>Submit</button>}
                                         <label htmlFor="uploadFile">Upload Image</label>
                                         <input ref={uploadedImage} type="file" id='uploadFile' accept='image/*' hidden

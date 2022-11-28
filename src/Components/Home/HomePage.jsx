@@ -5,7 +5,6 @@ import './Home.scss';
 import { useRef } from 'react';
 import lozad from 'lozad';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 function HomePage({ list }) {
     const [b, setB] = useState(4);

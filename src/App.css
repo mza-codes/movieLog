@@ -18,6 +18,9 @@
     --header-bg: #fc9652;
     --body-bg: #fc9652;
     --footer-bg: #fc9652;
+    --brand1: #fc9652;
+    --brand2: #000;
+    --brand-text: #fff;
 }
 
 .light {
