@@ -304,7 +304,7 @@ const AddItem = () => {
 
         } catch (e) {
             console.log("Error Occured While Data Submission", e);
-        }
+        };
     };
 
     useEffect(() => {
@@ -337,7 +337,6 @@ const AddItem = () => {
             hideProgressBar: true,
             autoClose: 2000
         };
-
         if (param === "image") {
             navigator.clipboard.writeText(movie?.image || w500 + movie?.poster_path ||
                 w500 + movie?.backdrop_path || "null");
@@ -357,10 +356,8 @@ const AddItem = () => {
     const handleChange = (e) => {
         let blob = uploadedImage?.current?.files[0];
         setImg(URL.createObjectURL(blob));
-        console.log("logging ref useEffect", blob);
         const myDate = new Date(blob?.lastModified).toLocaleString(dateOptions);
         const myDate2 = new Date(blob?.lastModifiedDate).toLocaleString(dateOptions);
-        console.log(myDate, ">|<", myDate2);
         if (blob !== undefined || null) {
             setImgDetails({
                 file: uploadedImage?.current?.files[0],
@@ -414,15 +411,13 @@ const AddItem = () => {
                         <div className="suggestionsContainer">
                             {suggestions?.length === 0 && searchResult?.map((movie) => (
                                 <div key={movie?.id} className="suggestionItem lozad"
-                                    onClick={e => setImg(movie?.image || w500 + movie?.poster_path || w500 + movie?.backdrop_path)}
-                                    style={{
-                                        background: `url(${movie?.image || w500 + movie?.poster_path ||
-                                            w500 + movie?.backdrop_path || ""})`
-                                    }} >
+                                    onClick={e => setImg(movie?.image || w500 + movie?.poster_path
+                                        || w500 + movie?.backdrop_path)}>
                                     <span className='pointer' onClick={e => { handleCopy(movie, "title") }}>
                                         <b>{movie?.title?.slice(0, 20) || movie?.original_title?.slice(0, 20)}</b>
                                     </span>
-                                    <span>{movie?.resultType || "" + " " + movie?.release_date || movie?.description?.slice(0, 14) || ""}</span>
+                                    <span>{movie?.resultType || "" + " " + movie?.release_date ||
+                                        movie?.description?.slice(0, 14) || ""}</span>
                                     <span className='icon'> <a href={`https://imdb.com/title/${movie?.id}`} target='_blank'
                                         rel='noreferrer'>
                                         <Iconify icon='fontisto:imdb' color='#DBA506' borderRadius={1}
@@ -446,11 +441,8 @@ const AddItem = () => {
                         <div className="suggestionsContainer">
                             {searchResult?.length === 0 && suggestions?.slice(0, 16).map((movie) => (
                                 <div key={movie?.id} className="suggestionItem lozad"
-                                    onClick={e => setImg(movie?.image || w500 + movie?.poster_path || w500 + movie?.backdrop_path)}
-                                    style={{
-                                        background: `url(${movie?.image || w500 + movie?.poster_path ||
-                                            w500 + movie?.backdrop_path || ""})`
-                                    }}>
+                                    onClick={e => setImg(movie?.image || w500 + movie?.poster_path
+                                        || w500 + movie?.backdrop_path)}>
                                     <span className='pointer' onClick={e => { handleCopy(movie, "title") }}>
                                         <b>{movie?.title?.slice(0, 20) || movie?.original_title?.slice(0, 20)}</b>
                                     </span>

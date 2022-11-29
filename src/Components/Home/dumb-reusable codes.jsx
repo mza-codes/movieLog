@@ -162,3 +162,8 @@ export default function ResultSort() {
     </>
   );
 }
+
+// style={{
+//   background: `url(${movie?.image || w500 + movie?.poster_path ||
+//       w500 + movie?.backdrop_path || ""})`
+// }}
