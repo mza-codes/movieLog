@@ -4,7 +4,7 @@ import { Register } from './Components/Auth/Register';
 import { lazy, Suspense, useContext } from "react";
 import { AuthContex } from "./Contexts/AuthContext";
 import Loader from "./Pages/Loader/Loader";
-
+// Lazy loading
 const SearchResult = lazy(() => import("./Components/Search/SearchResult"));
 const SearchResultIMDB = lazy(() => import("./Components/Search/SearchResultIMDB"));
 const ErrorLogo = lazy(() => import("./Constants/Error/ErrorLogo"));
@@ -13,7 +13,6 @@ const AddItem = lazy(() => import("./Pages/AddItem/AddItem"));
 const WatchLog = lazy(() => import("./Pages/WatchLog/WatchLog"));
 const EditItem = lazy(() => import("./Pages/EditItem/EditItem"));
 const HomePage2 = lazy(() => import("./Pages/Home/HomePage"));
-
 const ViewPage = lazy(() => import("./Pages/ViewPage/ViewPage"));
 
 export default function Router() {
