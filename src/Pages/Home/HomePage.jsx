@@ -2,8 +2,8 @@ import Header from '../../Components/Header/Header';
 import './HomePage.scss';
 import { useContext, useEffect, useState } from 'react';
 import lozad from 'lozad';
-import { IMDB_API } from '../../Constants/Constants';
-import axios from 'axios';
+// import { IMDB_API } from '../../Constants/Constants';
+// import axios from 'axios';
 import loadGif from './loader.gif';
 import { useNavigate } from 'react-router-dom';
 import data from './data';
@@ -20,29 +20,30 @@ const Home = () => {
     const { setUser } = useContext(AuthContex);
     const route = useNavigate();
     const observer = lozad();
-    const values = ["MostPopularTVs", "BoxOfficeAllTime", "Top250TVs", "Top250Movies", "MostPopularMovies"];
+   
+    // const values = ["MostPopularTVs", "BoxOfficeAllTime", "Top250TVs", "Top250Movies", "MostPopularMovies"];
 
-    const fetchData = async (value) => {
-        console.log(`Fetching ${value} ..`);
-        try {
-            const { data } = await axios.get(`https://imdb-api.com/en/API/${value}/${IMDB_API}`);
-            setMovies((curr) => ([...data?.items, ...curr]));
-            return true;
-        } catch (error) {
-            console.warn("error fetching data on homepage2");
-            return false;
-        };
-    };
+    // const fetchData = async (value) => {
+    //     console.log(`Fetching ${value} ..`);
+    //     try {
+    //         const { data } = await axios.get(`https://imdb-api.com/en/API/${value}/${IMDB_API}`);
+    //         setMovies((curr) => ([...data?.items, ...curr]));
+    //         return true;
+    //     } catch (error) {
+    //         console.warn("error fetching data on homepage2");
+    //         return false;
+    //     };
+    // };
 
-    const getData = () => {
-        values.forEach((item) => {
-            fetchData(item);
-        });
-        return true;
-    };
+    // const getData = () => {
+    //     values.forEach((item) => {
+    //         fetchData(item);
+    //     });
+    //     return true;
+    // };
 
     const getItems = () => {
-        setMovies(data.slice(700,742));
+        setMovies(data.slice(800,842));
         return;
     };
 

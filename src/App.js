@@ -1,6 +1,6 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
-import { BrowserRouter } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom'
 import Router from './router';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from './firebaseConfig/firebase';
@@ -9,11 +9,15 @@ import { AuthContex } from './Contexts/AuthContext';
 import { DataContext } from './Contexts/DataContext';
 import { doc, getDoc } from 'firebase/firestore';
 
-export default function App() {
-  const { user, setUser } = useContext(AuthContex);
-  const { movieLog, setMovieLog } = useContext(DataContext);
+if (process.env.NODE_ENV === 'production') {
+  console.log = () => { return true; }
+  console.error = () => { return true; }
+  console.debug = () => { return true; }
+};
 
-  console.log('myLog', movieLog);
+export default function App() {
+  const { setUser } = useContext(AuthContex);
+  const { setMovieLog } = useContext(DataContext);
 
   const fetchUserData = async (user) => {
     await getDoc(doc(db, 'webusers', user?.uid)).then((res) => {
@@ -21,7 +25,7 @@ export default function App() {
       setMovieLog(value?.watchData || []);
       console.log('FETCHED DATA FROM FIRESTORE');
       return true;
-    });
+    }).catch(err=>console.warn("Error Fetching Userdata",err));
   };
 
   useEffect(() => {
@@ -32,15 +36,14 @@ export default function App() {
     });
 
     return () => {
-      unsub()
+      unsub();
     };
-
   }, []);
 
   return (
-    <BrowserRouter>
+    <HashRouter hashType="hashbang">
       {/* NAVBAR GOES HERE */}
       <Router />
-    </BrowserRouter>
+    </HashRouter>
   );
 };
