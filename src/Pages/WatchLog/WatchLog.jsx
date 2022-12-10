@@ -10,24 +10,29 @@ import { arrayRemove, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig/firebase';
 import { AuthContex } from '../../Contexts/AuthContext';
 import lozad from 'lozad';
+import useDataStore from '../../Store/useDataStore';
+import { useRef } from 'react';
 
 function WatchLog() {
     const route = useNavigate();
     const observer = lozad();
     const { user } = useContext(AuthContex);
-    const { movieLog } = useContext(DataContext);
+    // const { movieLog } = useContext(DataContext);
+    const movieLog = useDataStore(state => state.movieLog);
     const [reverse, setReverse] = useState(true);
     const [watchLog, setWatchLog] = useState([]);
     const [view, setView] = useState(true);
     const [openSort, setOpenSort] = useState(null);
     const [label, setLabel] = useState('');
-    const [urlSearch, setUrlSearch] = useState(false);
+    // const [urlSearch, setUrlSearch] = useState(false);
+    const urlSearch = useRef();
     const alpha = /^[A-Za-z ]+$/;
     const regExNumbers = /^[0-9 ]+$/;
     const setData = useCallback(() => {
         console.log('INSIDE USECALLBACK');
         setWatchLog(_.sortBy(movieLog, 'name').reverse());
     }, []);
+    console.log("%cComponent Rendered", "color:red;font-size:20px;font-weight:400;");
 
     // Updating Watchcount As data stored as array needs to remove array, then add new one with updated values
     const myFunction = async () => {
@@ -71,14 +76,14 @@ function WatchLog() {
 
     const handleSearch = (query) => {
         let result = [];
-        console.log('searchValue', query);
+        const searchUrl = urlSearch.current.checked;
         const isWord = alpha.test(query);
         const isNumber = regExNumbers.test(query);
-        console.log(isWord, isNumber);
+        
         if (isWord) {
             result = movieLog.filter((data) => {
                 return data.name.toLowerCase().includes(query.toLowerCase()) ||
-                    (urlSearch && data.url.toLowerCase().includes(query.toLowerCase()))
+                    (searchUrl && data.url.toLowerCase().includes(query.toLowerCase()))
             });
             setWatchLog(result);
             return;
@@ -135,7 +140,9 @@ function WatchLog() {
                     <div className="searcher">
                         <input type="text" onChange={e => handleSearch(e.target.value)} placeholder='Search From Titles...' />
                         <Tooltip title="Include Searching in Image URLs"><div className='urlBox'>
-                            <input type="checkbox" onChange={e => setUrlSearch(!urlSearch)} />
+                            <input type="checkbox" value={0} ref={urlSearch} className="pointer"
+                            //  onChange={e => setUrlSearch(!urlSearch)} 
+                            />
                             <span>URL</span>
                         </div></Tooltip>
                     </div>
