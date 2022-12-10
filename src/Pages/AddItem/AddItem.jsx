@@ -302,7 +302,6 @@ const AddItem = () => {
                     route('/');
                 }, 5000);
             }).catch(e => console.log('PromiseErr', e));
-
         } catch (e) {
             console.log("Error Occured While Data Submission", e);
         };
